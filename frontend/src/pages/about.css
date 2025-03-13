@@ -1,0 +1,109 @@
+/* General Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #0a1155; /* Dark blue background */
+    color: #fff;
+    line-height: 1.6;
+}
+
+/* Navbar Styles (already defined in Navbar.css) */
+
+/* About Container */
+.about-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* About Header */
+.about-header {
+    margin-bottom: 3rem;
+}
+
+.about-title {
+    font-size: 3rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, #ff8c00, #e67e00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+}
+
+.about-subtitle {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* About Content */
+.about-content {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2rem;
+    border-radius: 10px;
+    margin-bottom: 3rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.about-text {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 1.5rem;
+}
+
+/* About Stats */
+.about-stats {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.stat-item {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    flex: 1 1 200px;
+}
+
+.stat-item:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, #ff8c00, #e67e00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+}
+
+.stat-text {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .about-title {
+        font-size: 2rem;
+    }
+
+    .about-subtitle {
+        font-size: 1rem;
+    }
+
+    .about-stats {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .stat-item {
+        width: 80%;
+    }
+}

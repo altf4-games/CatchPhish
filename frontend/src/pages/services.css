@@ -1,0 +1,171 @@
+/* General Styles */
+.services-container {
+    padding: 80px 20px;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    color: #fff;
+    text-align: center;
+    min-height: 100vh;
+  }
+  
+  .services-title {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    color: #f39c12;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+    animation: fadeInDown 1s ease-in-out;
+  }
+  
+  .services-description {
+    font-size: 1.5rem;
+    margin-bottom: 60px;
+    color: rgba(255, 255, 255, 0.9);
+    animation: fadeIn 1.5s ease-in-out;
+  }
+  
+  .highlight {
+    color: #f39c12;
+  }
+  
+  .phish {
+    color: #e74c3c;
+  }
+  
+  /* Service Cards */
+  .service-cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    padding: 20px;
+  }
+  
+  .card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 30px;
+    width: 300px;
+    margin: 10px;
+    transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: fadeInUp 1s ease-in-out;
+  }
+  
+  .card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+    background: rgba(255, 255, 255, 0.15);
+  }
+  
+  .card img {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 20px;
+    filter: drop-shadow(2px 2px 8px rgba(0, 0, 0, 0.5));
+  }
+  
+  .card h2 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    color: #f39c12;
+  }
+  
+  .card p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.9);
+  }
+  
+  /* Addon Banner */
+  .addon-banner {
+    margin-top: 80px;
+    padding: 50px 20px;
+    background: linear-gradient(135deg, #16213e, #0f3460);
+    border-radius: 15px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    animation: fadeInUp 1.5s ease-in-out;
+  }
+  
+  .addon-banner h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #f39c12;
+  }
+  
+  .addon-banner p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    color: rgba(255, 255, 255, 0.9);
+  }
+  
+  .install-btn {
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    background-color: #f39c12;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+  }
+  
+  .install-btn:hover {
+    background-color: #e67e22;
+    transform: scale(1.05);
+  }
+  
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .services-title {
+      font-size: 2.5rem;
+    }
+  
+    .services-description {
+      font-size: 1.2rem;
+    }
+  
+    .card {
+      width: 100%;
+      max-width: 300px;
+    }
+  
+    .addon-banner h2 {
+      font-size: 2rem;
+    }
+  
+    .addon-banner p {
+      font-size: 1rem;
+    }
+  }
