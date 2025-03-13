@@ -1,0 +1,271 @@
+/* Add this to your CSS file */
+.navbar {
+  background-color: #0a1155;
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-brand img {
+  height: 40px;
+  margin-right: 10px;
+}
+
+.navbar-brand span {
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+}
+
+.navbar-brand span.highlight {
+  color: #ff8c00;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-links a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  margin: 0 15px;
+  padding: 8px 0;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  position: relative;
+}
+
+.navbar-links a:hover {
+  color: white;
+}
+
+.navbar-links a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #ff8c00;
+  transition: width 0.3s ease;
+}
+
+.navbar-links a:hover::after {
+  width: 100%;
+}
+
+.navbar-links a.active {
+  color: white;
+}
+
+.navbar-links a.active::after {
+  width: 100%;
+}
+
+.auth-links {
+  display: flex;
+  align-items: center;
+}
+
+.auth-links .sign-up {
+  margin-right: 10px;
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-links .dashboard-btn {
+  background-color: #ff8c00;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-decoration: none;
+}
+
+.auth-links .dashboard-btn:hover {
+  background-color: #e67e00;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 15px 20px;
+    flex-wrap: wrap;
+  }
+  
+  .navbar-links {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    margin-top: 15px;
+  }
+  
+  .navbar-links a {
+    margin: 0 10px;
+    font-size: 14px;
+  }
+  
+  .auth-links {
+    margin-left: auto;
+  }
+}
+
+/* Existing Navbar Styles */
+.contact-link {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8); /* Light text color */
+  font-weight: 500;
+  font-size: 16px;
+  margin: 0 15px;
+  padding: 8px 0;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  position: relative;
+}
+
+.contact-link:hover {
+  color: white; /* White text on hover */
+}
+
+.contact-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #ff8c00; /* Orange underline */
+  transition: width 0.3s ease;
+}
+
+.contact-link:hover::after {
+  width: 100%; /* Full underline on hover */
+}
+
+/* Active State for Contact Us Button */
+.contact-link.active {
+  color: white; /* White text when active */
+}
+
+.contact-link.active::after {
+  width: 100%; /* Full underline when active */
+}
+
+/* Contact Slider Styles */
+.contact-slider {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 400px;
+  height: 100vh;
+  background-color: #fff; /* White background */
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  transition: left 0.5s ease-in-out;
+  z-index: 1000;
+}
+
+.contact-slider.open {
+  left: 0;
+}
+
+.contact-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background-color: #0a1155; /* Dark blue header */
+  color: white;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between image and text */
+}
+
+.header-image {
+  width: 70px; /* Adjust size as needed */
+  height: 60px; /* Adjust size as needed */
+}
+
+.contact-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+.contact-form {
+  padding: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #333; /* Dark text for labels */
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd; /* Light border */
+  border-radius: 6px;
+  background-color: #f9f9f9; /* Light gray background */
+  color: #333; /* Dark text */
+  font-size: 1rem;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #ff8c00; /* Orange border on focus */
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #ff8c00; /* Orange button */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+  background-color: #e67e00; /* Darker orange on hover */
+}
+
+/* Overlay for when the slider is open */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  z-index: 999;
+}

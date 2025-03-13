@@ -1,0 +1,123 @@
+/* Login Page Container */
+.login-container {
+  font-family: Arial, sans-serif;
+  background-color: #ffffff;
+  color: white;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Header */
+.login-header {
+  background-color: #0a1a4b;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  
+  height: 70px;
+}
+.new{
+  padding-bottom: 10px;
+  
+}
+
+.highlight {
+  font-weight: bold;
+  color: #fdbc40;
+}
+
+/* Login Box */
+.login-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #D9F1FF;
+  padding-right: 80px;
+  border-radius: 10px;
+  margin: 20px auto;
+  width: 60%;
+}
+
+/* Form Styling */
+.login-form {
+  background-color: #0a1a4b;
+  padding: 40px;
+  border-radius: 10px;
+  text-align: left;
+  width: 50%;
+}
+
+.login-form label {
+  font-weight: bold;
+  color: #fdbc40;
+  display: block;
+  margin-top: 10px;
+}
+
+.login-form input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border-radius: 5px;
+  border: none;
+}
+
+/* reCAPTCHA */
+.recaptcha {
+  display: flex;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.recaptcha input {
+  margin-right: 10px;
+}
+
+/* Verify Link */
+.verify-link {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+/* Login Button */
+.login-button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background: linear-gradient(to right, #7288e1, #304ffe);
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.login-button:hover {
+  background: linear-gradient(to right, #fdbc40, #1a237e);
+}
+
+/* Forgot Password */
+.forgot-password {
+  font-size: 12px;
+  color: #bbb;
+  margin-top: 10px;
+}
+
+/* Logo */
+.login-logo img {
+  width: 500px;
+  border-radius: 20px;
+  background-color: red;
+  margin-left: 105px;
+}
+
+/* Footer */
+footer {
+  background-color: #0a1a4b;
+  padding-top: 30px;
+  font-size: 12px;
+  height: 50px;
+}

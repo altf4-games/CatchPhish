@@ -1,0 +1,369 @@
+.landing-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Poppins', sans-serif;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  position: relative;
+  padding: 60px 40px;
+  background: linear-gradient(135deg, #0a1155 0%, #2a3990 100%);
+}
+
+.content-center {
+  flex: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  z-index: 1;
+}
+
+.main-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.main-logo img {
+  height: 80px;
+  margin-right: 10px;
+}
+
+.main-logo h1 {
+  font-size: 48px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+}
+
+.main-logo p {
+  color: #ff8c00;
+  font-size: 48px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.description {
+  font-size: 20px;
+  color: #ffffff;
+  max-width: 700px;
+  margin: 0 auto 40px;
+  line-height: 1.6;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.search-section {
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.search-input {
+  width: 100%;
+  padding: 20px 60px 20px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.analyze-btn {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  background-color: #ff8c00;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.analyze-btn:hover {
+  background-color: #e67e00;
+}
+
+.analyze-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.upload-area {
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+}
+
+.upload-area:hover {
+  border-color: #ff8c00;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.upload-icon {
+  font-size: 32px;
+  margin-bottom: 15px;
+  color: #ff8c00;
+}
+
+.file-info {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  margin: 10px 0;
+}
+
+.file-input {
+  display: none;
+}
+
+.select-button {
+  display: inline-block;
+  padding: 12px 24px;
+  background-color: #ff8c00;
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 15px;
+}
+
+.select-button:hover {
+  background-color: #e67e00;
+}
+
+.net-illustration {
+  position: absolute;
+  left: -50px;
+  bottom: -50px;
+  width: 300px;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.fish-illustration {
+  position: absolute;
+  right: 30px;
+  top: 40%;
+  transform: translateY(-50%);
+  width: 200px;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.footer {
+  padding: 20px 0;
+  background: #0a1155;
+  text-align: center;
+}
+
+.footer p {
+  color: white;
+  margin: 0;
+}
+
+/* Results styling */
+.error-message {
+  color: #ff3b30;
+  background-color: rgba(255, 59, 48, 0.1);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.result-container {
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 30px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+}
+
+.result-header h2 {
+  margin: 0;
+  color: #0a1155;
+  font-weight: 700;
+}
+
+.risk-indicator {
+  font-weight: 600;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 16px;
+  border-radius: 8px;
+  min-width: 180px;
+  text-align: center;
+}
+
+.detail-item {
+  margin-bottom: 20px;
+}
+
+.detail-item strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #0a1155;
+}
+
+.progress-bar-container {
+  height: 10px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  overflow: hidden;
+  position: relative;
+  margin-top: 8px;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.5s ease-in-out;
+}
+
+.progress-text {
+  position: absolute;
+  right: 5px;
+  top: -20px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.domain-text {
+  color: #003ed0; /* Or any color you prefer */
+}
+
+.indicators-list, .detail-item ul {
+  padding-left: 20px;
+  margin-top: 10px;
+}
+
+.indicators-list li, .detail-item ul li {
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.login-prompt {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.login-prompt p {
+  margin: 0;
+  color: #555;
+}
+
+.login-btn {
+  background-color: #0a1155;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login-btn:hover {
+  background-color: #2a3990;
+}
+
+/* Safe/Phishing badges */
+.safe-badge {
+  background-color: #34C759;
+  color: white;
+}
+
+.phishing-badge {
+  background-color: #FF3B30;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .net-illustration,
+  .fish-illustration {
+    display: none;
+  }
+
+  .main-content {
+    padding: 30px 20px;
+  }
+
+  .content-center {
+    padding: 0;
+  }
+
+  .main-logo {
+    flex-direction: column;
+  }
+
+  .main-logo img {
+    margin: 0 0 15px 0;
+    height: 60px;
+  }
+
+  .main-logo h1, .main-logo p {
+    font-size: 36px;
+  }
+
+  .result-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .risk-indicator {
+    margin-top: 15px;
+    width: 100%;
+  }
+
+  .analyze-btn {
+    position: relative;
+    right: auto;
+    top: auto;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .search-input {
+    padding: 15px;
+  }
+  
+  .login-prompt {
+    flex-direction: column;
+  }
+  
+  .login-prompt p {
+    margin-bottom: 10px;
+  }
+}
