@@ -114,7 +114,13 @@ def get_gemini_analysis(url):
         if gemini_text.endswith("```"):
             gemini_text = gemini_text[:-3]
 
-        return json.loads(gemini_text.strip())
+        # Convert the cleaned response into JSON
+        gemini_data = json.loads(gemini_text.strip())
+
+        # Ensure all float32 values are converted to Python float
+        gemini_data = json.loads(json.dumps(gemini_data, default=lambda x: float(x)))
+
+        return gemini_data
 
     except Exception as e:
         print(f"Error in Gemini analysis: {e}")
@@ -126,7 +132,7 @@ def get_ml_prediction(url):
         model = keras.models.load_model(MODEL_PATH)
         url_features = np.array([extract_features(url)])
         prediction = model.predict(url_features)
-        return round(prediction[0][0] * 100, 3)
+        return float(prediction[0][0] * 100) 
     except Exception as e:
         print(f"ML error: {e}")
         return 0

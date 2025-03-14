@@ -1,0 +1,11 @@
+tensorflow
+requests
+flask
+beautifulsoup4
+google-genai
+flask_cors
+dnspython
+html5lib
+numpy
+keras
+urllib3
