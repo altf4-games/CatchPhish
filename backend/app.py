@@ -8,7 +8,7 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
 # Connect to local MongoDB
-app.config["MONGO_URI"] = "mongodb://127.0.0.1:27017/catchphish"
+app.config["MONGO_URI"] = "mongodb+srv://pradyum_m:RXhlFA6MVx1i1yCl@cluster0.ej8bk.mongodb.net/"
 mongo = PyMongo(app)
 
 bcrypt = Bcrypt(app)

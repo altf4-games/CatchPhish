@@ -1,35 +1,39 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const session = require('express-session');
+const session = require("express-session");
 const app = express();
 const connectDB = require("./config/db");
 const reportRoutes = require("./routes/reports");
 const userRoutes = require("./routes/userRoutes");
 
 // Import Report model - add this line
-const Report = mongoose.model('Report', require('./models/report.model').schema);
-
-
-
+const Report = mongoose.model(
+  "Report",
+  require("./models/report.model").schema
+);
 
 // Middleware - Order is important!
 app.use(express.json()); // Parse JSON bodies
 
-app.use(cors({
-  origin: "http://localhost:3000",  // Your frontend address
-  credentials: true                 // Allow credentials (cookies)
-}));
+app.use(
+  cors({
+    origin: "http://localhost:3001", // Your frontend address
+    credentials: true, // Allow credentials (cookies)
+  })
+);
 
-app.use(session({
-  secret: 'your-secret-key',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { 
-    secure: process.env.NODE_ENV === 'production', // Only use secure in production
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
-  }
-}));
+app.use(
+  session({
+    secret: "your-secret-key",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production", // Only use secure in production
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    },
+  })
+);
 
 // Connect to Database - use only one connection method
 connectDB();
@@ -71,7 +75,6 @@ app.post("/register", (req, res) => {
 app.get("/", (req, res) => {
   res.send("Backend is working!");
 });
-
 
 // Start Server
 const PORT = process.env.PORT || 5000;
