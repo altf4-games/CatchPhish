@@ -10,7 +10,6 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from bs4 import BeautifulSoup
 from google import genai
-
 app = Flask(__name__)
 CORS(app)
 
@@ -218,6 +217,8 @@ def analyze_url():
     except Exception as e:
         print("Error:", str(e))
         return jsonify({"error": "Internal server error"}), 500
+
+
 
 
 if __name__ == '__main__':

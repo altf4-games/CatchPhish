@@ -11,6 +11,8 @@ function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [certInReportStatus, setCertInReportStatus] = useState(null);
+  const [certInReportLoading, setCertInReportLoading] = useState(false);
   const navigate = useNavigate();
 
   // Check authentication status on component mount
@@ -212,6 +214,44 @@ function Dashboard() {
     }
   };
 
+  // Function to handle CERT-In report generation and submission
+  const handleCertInReport = async () => {
+    if (!result) return;
+
+    setCertInReportLoading(true);
+    setCertInReportStatus(null);
+
+    try {
+      // Save the analysis result to a JSON file that can be processed by the CERT-In report generator
+      const jsonData = JSON.stringify(result);
+      
+      // Send the data to the backend for CERT-In report processing
+      const response = await axios.post("http://127.0.0.1:5001/generate-certin-report", {
+        reportData: jsonData,
+      });
+
+      if (response.data.success) {
+        setCertInReportStatus({
+          success: true,
+          message: "CERT-In report successfully generated and sent."
+        });
+      } else {
+        setCertInReportStatus({
+          success: false,
+          message: response.data.message || "Failed to generate CERT-In report."
+        });
+      }
+    } catch (err) {
+      console.error("Error generating CERT-In report:", err);
+      setCertInReportStatus({
+        success: false,
+        message: "Error generating CERT-In report. Please try again later."
+      });
+    } finally {
+      setCertInReportLoading(false);
+    }
+  };
+
   // Function to determine risk level color
   const getRiskColor = (score) => {
     if (score >= 70) return "#FF3B30"; // High risk - Red
@@ -219,6 +259,8 @@ function Dashboard() {
     if (score >= 20) return "#FFCC00"; // Low risk - Yellow
     return "#34C759"; // Very low risk - Green
   };
+
+  // Function to determine if the risk score meets the CERT-In reporting threshold
 
   return (
     <div className="daashboard">
@@ -350,15 +392,57 @@ function Dashboard() {
               Download Report as JSON
             </button>
             <button onClick={handleDownloadPDF}>Download Report as PDF</button>
+            
+            {/* CERT-In Report Button - Only show if risk score meets threshold */}
+            <button 
+  onClick={handleCertInReport} 
+  disabled={certInReportLoading}
+  className="certin-report-btn"
+  style={{ 
+    backgroundColor: "#D32F2F", 
+    color: "white",
+    fontWeight: "bold",
+    marginLeft: "10px"
+  }}
+>
+  {certInReportLoading ? "Sending..." : "Send CERT-In Report"}
+</button>
           </div>
 
-          {!isAuthenticated && (
-            <div className="login-prompt">
-              <p>Log in to save this report and access your history</p>
-              <button className="login-btn" onClick={() => navigate("/login")}>
-                Log in
-              </button>
+          {/* CERT-In Report Status Message */}
+          {certInReportStatus && (
+            <div 
+              className="certin-status"
+              style={{ 
+                marginTop: "10px", 
+                padding: "10px", 
+                borderRadius: "4px",
+                backgroundColor: certInReportStatus.success ? "#DFF2BF" : "#FFBABA",
+                color: certInReportStatus.success ? "#4F8A10" : "#D8000C"
+              }}
+            >
+              {certInReportStatus.message}
             </div>
+          )}
+
+{!isAuthenticated && (
+  <div className="login-prompt">
+    <p>Log in to save this report and access your history</p>
+    <button className="login-btn" onClick={() => navigate("/login")}>
+      Log in
+    </button>
+  </div>
+)}
+          
+          {/* Additional information about CERT-In reporting */}
+          { (
+            <div className="certin-info" style={{ marginTop: "15px", padding: "10px", backgroundColor: "#f8f9fa", borderRadius: "4px" }}>
+            <h4 style={{ margin: "0 0 10px 0" }}>About CERT-In Reporting</h4>
+            <p style={{ fontSize: "0.9em", margin: "0" }}>
+              The CERT-In (Indian Computer Emergency Response Team) report is an official format for reporting cybersecurity incidents to the Indian government.
+              When you click "Send CERT-In Report", our system generates a detailed report in the required format and sends it to CERT-In for review and action.
+            </p>
+          </div>
           )}
         </div>
       )}
