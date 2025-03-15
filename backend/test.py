@@ -6,7 +6,7 @@ import os
 import numpy as np
 from tensorflow import keras
 from Feature_Extractor import extract_features
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, send_file, render_template_string
 from flask_cors import CORS
 from bs4 import BeautifulSoup
 from google import genai
@@ -18,6 +18,12 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
 import logging
+import io, json, random
+from datetime import datetime
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 
 app = Flask(__name__)
 CORS(app)
@@ -397,5 +403,342 @@ def generate_certin_report():
             'message': f'Error processing request: {str(e)}'
         })
 
+class PhishingReportGenerator:
+    def __init__(self):
+        self.styles = getSampleStyleSheet()
+        self.styles.add(ParagraphStyle(name='CustomTitle', parent=self.styles['Heading1'], fontSize=18, alignment=1, spaceAfter=12))
+        self.styles.add(ParagraphStyle(name='Subtitle', parent=self.styles['Heading2'], fontSize=14, textColor=colors.HexColor('#444444'), spaceAfter=12))
+        self.styles.add(ParagraphStyle(name='SectionHeading', parent=self.styles['Heading3'], fontSize=12, textColor=colors.HexColor('#246AB3'), spaceBefore=12, spaceAfter=6))
+        self.styles.add(ParagraphStyle(name='RiskHigh', parent=self.styles['Normal'], fontSize=11, textColor=colors.HexColor('#CC0000'), fontName='Helvetica-Bold'))
+        self.styles.add(ParagraphStyle(name='RiskMedium', parent=self.styles['Normal'], fontSize=11, textColor=colors.HexColor('#FF9900'), fontName='Helvetica-Bold'))
+        self.styles.add(ParagraphStyle(name='RiskLow', parent=self.styles['Normal'], fontSize=11, textColor=colors.HexColor('#009900'), fontName='Helvetica-Bold'))
+        self.styles.add(ParagraphStyle(name='NormalCustom', parent=self.styles['Normal'], fontSize=10, leading=14))
+        self.styles.add(ParagraphStyle(name='NormalSmall', parent=self.styles['Normal'], fontSize=8, leading=10))
+        self.styles.add(ParagraphStyle(name='TableHeader', parent=self.styles['Normal'], fontSize=10, fontName='Helvetica-Bold', alignment=1))
+        self.styles.add(ParagraphStyle(name='Footer', parent=self.styles['Normal'], fontSize=8, textColor=colors.gray, alignment=1))
+
+    def add_watermark(self, canv, doc):
+        canv.saveState()
+        try:
+            canv.setFillAlpha(0.08)
+        except Exception:
+            pass
+        logo_path = "CatchPhish.png"
+        if os.path.exists(logo_path):
+            canv.drawImage(logo_path, 100, 200, width=400, height=400, preserveAspectRatio=True)
+        try:
+            canv.setFillAlpha(1.0)
+        except Exception:
+            pass
+        if os.path.exists(logo_path):
+            canv.drawImage(logo_path, 100, 200, width=400, height=400, preserveAspectRatio=True)
+        canv.setFont('Helvetica-Bold', 16)
+        canv.setFillColor(colors.HexColor('#246AB3'))
+        canv.drawString(30, A4[1] - 50, "CatchPhish")
+        canv.setFont('Helvetica', 10)
+        canv.setFillColor(colors.HexColor('#666666'))
+        canv.drawString(30, A4[1] - 65, "Advanced Phishing Detection")
+        canv.setStrokeColor(colors.HexColor('#246AB3'))
+        canv.setLineWidth(2)
+        canv.line(30, A4[1] - 80, A4[0] - 30, A4[1] - 80)
+        canv.setFont('Helvetica', 8)
+        canv.setFillColor(colors.gray)
+        page_num = canv.getPageNumber()
+        canv.drawString(A4[0] - 60, 30, f"Page {page_num}")
+        canv.drawString(30, 30, f"Report ID: {self.report_id}")
+        canv.drawString(30, 20, f"Generated: {datetime.now().strftime('%d/%m/%Y %H:%M')}")
+        canv.setStrokeColor(colors.gray)
+        canv.setLineWidth(0.5)
+        canv.line(30, 45, A4[0] - 30, 45)
+        canv.restoreState()
+
+    def get_risk_level_style(self, risk_score):
+        try:
+            risk_score = float(risk_score)
+        except (ValueError, TypeError):
+            risk_score = 0.0
+        # Adjusted thresholds for risk_score between 0 and 100
+        if risk_score >= 70.0:
+            return self.styles['RiskHigh']
+        elif risk_score >= 40.0:
+            return self.styles['RiskMedium']
+        else:
+            return self.styles['RiskLow']
+
+    def get_risk_level_text(self, risk_score):
+        try:
+            risk_score = float(risk_score)
+        except (ValueError, TypeError):
+            risk_score = 0.0
+        # Adjusted thresholds for risk_score between 0 and 100
+        if risk_score >= 70.0:
+            return "HIGH RISK"
+        elif risk_score >= 40.0:
+            return "MEDIUM RISK"
+        else:
+            return "LOW RISK"
+
+    def format_datetime(self, timestamp):
+        if not timestamp:
+            return "Unknown"
+        try:
+            dt = datetime.fromtimestamp(timestamp)
+            return dt.strftime("%d/%m/%Y %H:%M UTC")
+        except Exception:
+            return "Invalid timestamp"
+
+    def extract_location_from_whois(self, whois_data):
+        if not whois_data or not whois_data.get("contacts"):
+            return "Unknown"
+        contacts = whois_data.get("contacts", {})
+        for contact_type in ["owner", "admin", "tech"]:
+            if contact_type in contacts and contacts[contact_type]:
+                contact = contacts[contact_type][0]
+                country = contact.get("country", "")
+                state = contact.get("state", "")
+                city = contact.get("city", "")
+                if country:
+                    location_parts = [part for part in [city, state, country] if part]
+                    return ", ".join(location_parts)
+        return "Unknown"
+
+    def extract_registrar_info(self, whois_data):
+        if not whois_data or not whois_data.get("registrar"):
+            return "Unknown"
+        registrar = whois_data.get("registrar", {})
+        return registrar.get("name", "Unknown")
+
+    def extract_ip_info(self, dns_records):
+        if not dns_records or not dns_records.get("A"):
+            return "Unknown"
+        ip_addresses = dns_records.get("A", [])
+        return ", ".join(ip_addresses) if ip_addresses else "Unknown"
+
+    def generate_report(self, json_data):
+        self.report_id = f"PR-{datetime.now().strftime('%Y%m%d')}-{random.randint(100000, 999999)}"
+        data = json_data if isinstance(json_data, dict) else json.loads(json_data)
+        pdf_buffer = io.BytesIO()
+        doc = SimpleDocTemplate(pdf_buffer, pagesize=A4, rightMargin=72, leftMargin=72, topMargin=72, bottomMargin=72)
+        content = []
+        domain = data.get("domain", "Unknown")
+        # Ensure risk_score is a float between 0 and 100
+        risk_score = float(data.get("risk_score", 0))
+        confidence = data.get("confidence", "Unknown")
+        ml_prediction = data.get("ml_prediction", 0)
+        gemini_analysis = data.get("gemini_analysis", {})
+        whois_data = data.get("whois_data", {})
+        dns_records = data.get("dns_records", {})
+        virustotal = data.get("virustotal", {})
+
+        risk_style = self.get_risk_level_style(risk_score)
+        risk_level_text = self.get_risk_level_text(risk_score)
+
+        content.append(Spacer(1, 60))
+        content.append(Paragraph("Phishing Detection Report", self.styles["Title"]))
+        content.append(Spacer(1, 12))
+        content.append(Paragraph(f"Domain Analysis: {domain}", self.styles["Subtitle"]))
+        content.append(Paragraph(f"Report Generated: {datetime.now().strftime('%B %d, %Y')}", self.styles["NormalCustom"]))
+        content.append(Paragraph(f"Analysis ID: {self.report_id}", self.styles["NormalCustom"]))
+        content.append(Spacer(1, 12))
+        content.append(Paragraph("<hr/>", self.styles["NormalCustom"]))
+        content.append(Paragraph("Executive Summary", self.styles["SectionHeading"]))
+        summary_text = (
+            f"A detailed security analysis has been conducted on <b>{domain}</b>, which has been "
+            f"flagged as a <b>{risk_level_text} domain</b> with a risk score of <b>{risk_score:.2f}/100</b>. "
+        )
+        if risk_score >= 70.0:
+            summary_text += "This domain requires immediate attention as it meets our alert threshold for potential phishing activity."
+        elif risk_score >= 40.0:
+            summary_text += "This domain should be monitored as it shows some indicators of suspicious activity."
+        else:
+            summary_text += "This domain shows low risk indicators but should still be monitored for changes."
+        content.append(Paragraph(summary_text, self.styles["NormalCustom"]))
+        content.append(Spacer(1, 12))
+        content.append(Paragraph("<hr/>", self.styles["NormalCustom"]))
+        content.append(Paragraph("Risk Assessment", self.styles["SectionHeading"]))
+        risk_data = [
+            [Paragraph("Metric", self.styles["TableHeader"]),
+             Paragraph("Value", self.styles["TableHeader"]),
+             Paragraph("Description", self.styles["TableHeader"])],
+            [Paragraph("<b>Overall Risk Score</b>", self.styles["NormalCustom"]),
+             Paragraph(f"<b>{risk_score:.2f}/100</b>", risk_style),
+             Paragraph(f"{risk_level_text} level requiring {'immediate action' if risk_score >= 70.0 else 'monitoring'}", self.styles["NormalCustom"])],
+            [Paragraph("<b>Machine Learning Prediction</b>", self.styles["NormalCustom"]),
+             Paragraph(f"{ml_prediction:.2f}%", self.styles["NormalCustom"]),
+             Paragraph("ML-based probability of phishing behavior", self.styles["NormalCustom"])],
+            [Paragraph("<b>Gemini AI Confidence</b>", self.styles["NormalCustom"]),
+             Paragraph(f"{confidence} ({gemini_analysis.get('confidence', 0)})", self.styles["NormalCustom"]),
+             Paragraph("AI confidence in phishing classification", self.styles["NormalCustom"])],
+            [Paragraph("<b>VirusTotal Flags</b>", self.styles["NormalCustom"]),
+             Paragraph(f"{virustotal.get('malicious_engines', 0)}/{virustotal.get('total_engines', 0)}", self.styles["NormalCustom"]),
+             Paragraph("Number of security engines flagging this domain", self.styles["NormalCustom"])]
+        ]
+        risk_table = Table(risk_data, colWidths=[doc.width * 0.25, doc.width * 0.25, doc.width * 0.5])
+        risk_table.setStyle(TableStyle([
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#E5E5E5')),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('ALIGN', (1, 0), (1, -1), 'CENTER'),
+        ]))
+        content.append(risk_table)
+        content.append(Spacer(1, 12))
+        content.append(Paragraph("<hr/>", self.styles["NormalCustom"]))
+        content.append(Paragraph("Domain Information", self.styles["SectionHeading"]))
+        registrar = self.extract_registrar_info(whois_data)
+        creation_date = whois_data.get("created", "Unknown")
+        expiry_date = whois_data.get("expires", "Unknown")
+        ip_address = self.extract_ip_info(dns_records)
+        location = self.extract_location_from_whois(whois_data)
+        privacy_service = "Unknown"
+        if (whois_data.get("contacts") and whois_data["contacts"].get("owner") and 
+            whois_data["contacts"]["owner"][0].get("organization")):
+            privacy_service = whois_data["contacts"]["owner"][0]["organization"]
+        domain_data = [
+            [Paragraph("Property", self.styles["TableHeader"]), 
+             Paragraph("Details", self.styles["TableHeader"])],
+            [Paragraph("<b>Domain Name</b>", self.styles["NormalCustom"]),
+             Paragraph(domain, self.styles["NormalCustom"])],
+            [Paragraph("<b>Creation Date</b>", self.styles["NormalCustom"]),
+             Paragraph(creation_date, self.styles["NormalCustom"])],
+            [Paragraph("<b>Expiration Date</b>", self.styles["NormalCustom"]),
+             Paragraph(expiry_date, self.styles["NormalCustom"])],
+            [Paragraph("<b>IP Address</b>", self.styles["NormalCustom"]),
+             Paragraph(ip_address, self.styles["NormalCustom"])],
+            [Paragraph("<b>Registrar</b>", self.styles["NormalCustom"]),
+             Paragraph(registrar, self.styles["NormalCustom"])],
+            [Paragraph("<b>WHOIS Privacy</b>", self.styles["NormalCustom"]),
+             Paragraph(privacy_service, self.styles["NormalCustom"])],
+            [Paragraph("<b>Location</b>", self.styles["NormalCustom"]),
+             Paragraph(location, self.styles["NormalCustom"])]
+        ]
+        domain_table = Table(domain_data, colWidths=[doc.width * 0.3, doc.width * 0.7])
+        domain_table.setStyle(TableStyle([
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#E5E5E5')),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ]))
+        content.append(domain_table)
+        content.append(Spacer(1, 12))
+        content.append(Paragraph("<hr/>", self.styles["NormalCustom"]))
+        content.append(Paragraph("AI Analysis Insights", self.styles["SectionHeading"]))
+        gemini_score = gemini_analysis.get("score", 0)
+        gemini_insights = gemini_analysis.get("insights", [])
+        gemini_reason = gemini_analysis.get("reason", "No analysis provided")
+        content.append(Paragraph(f"<b>AI Phishing Analysis Score:</b> {gemini_score}/10", self.styles["NormalCustom"]))
+        content.append(Paragraph(f"<b>Analysis Summary:</b> {gemini_reason}", self.styles["NormalCustom"]))
+        content.append(Spacer(1, 6))
+        if gemini_insights:
+            content.append(Paragraph("<b>Key Insights:</b>", self.styles["NormalCustom"]))
+            for insight in gemini_insights:
+                content.append(Paragraph(f"• {insight}", self.styles["NormalCustom"]))
+        content.append(Spacer(1, 12))
+        content.append(Paragraph("<hr/>", self.styles["NormalCustom"]))
+        content.append(Paragraph("Security Scan Results", self.styles["SectionHeading"]))
+        vt_positives = virustotal.get("malicious_engines", 0)
+        vt_total = virustotal.get("total_engines", 0)
+        vt_categories = virustotal.get("categories", {})
+        vt_last_analysis = virustotal.get("last_analysis_date", None)
+        content.append(Paragraph(f"<b>VirusTotal Detection:</b> {vt_positives}/{vt_total} security vendors flagged this domain as malicious", self.styles["NormalCustom"]))
+        if vt_last_analysis:
+            formatted_date = self.format_datetime(vt_last_analysis)
+            content.append(Paragraph(f"<b>Last Analysis Date:</b> {formatted_date}", self.styles["NormalCustom"]))
+        if vt_categories:
+            content.append(Paragraph("<b>Domain Categories:</b>", self.styles["NormalCustom"]))
+            for vendor, category in vt_categories.items():
+                content.append(Paragraph(f"• {vendor}: {category}", self.styles["NormalSmall"]))
+        content.append(Spacer(1, 12))
+        content.append(Paragraph("<hr/>", self.styles["NormalCustom"]))
+        content.append(Paragraph("DNS Records", self.styles["SectionHeading"]))
+        if dns_records:
+            for record_type, records in dns_records.items():
+                if records:
+                    content.append(Paragraph(f"<b>{record_type} Records:</b>", self.styles["NormalCustom"]))
+                    if isinstance(records, list):
+                        for record in records:
+                            content.append(Paragraph(f"• {record}", self.styles["NormalSmall"]))
+                    else:
+                        content.append(Paragraph(f"• {records}", self.styles["NormalSmall"]))
+                    content.append(Spacer(1, 4))
+        else:
+            content.append(Paragraph("No DNS records found for this domain.", self.styles["NormalCustom"]))
+        content.append(Spacer(1, 12))
+        content.append(Paragraph("<hr/>", self.styles["NormalCustom"]))
+        content.append(Paragraph("Recommendations", self.styles["SectionHeading"]))
+        # Adjusted recommendation thresholds for risk_score between 0 and 100
+        if risk_score >= 70.0:
+            recommendations = [
+                "Block access to this domain immediately across all network infrastructure",
+                "Alert users who may have visited this domain about potential data compromise",
+                "Monitor for any credentials that may have been entered on this domain",
+                "Add this domain to your organization's blocklist",
+                "Consider forensic investigation if any users have interacted with this domain"
+            ]
+        elif risk_score >= 40.0:
+            recommendations = [
+                "Implement cautionary blocking of this domain",
+                "Monitor any traffic to this domain",
+                "Consider warning users about this domain",
+                "Add enhanced logging for any interactions with this domain",
+                "Re-scan this domain periodically to monitor for changes"
+            ]
+        else:
+            recommendations = [
+                "Add this domain to your watchlist for regular monitoring",
+                "No immediate action required, but maintain vigilance",
+                "Consider periodic rescanning of this domain",
+                "Document this domain in your security monitoring system"
+            ]
+        for recommendation in recommendations:
+            content.append(Paragraph(f"• {recommendation}", self.styles["NormalCustom"]))
+        content.append(Spacer(1, 24))
+        content.append(Paragraph("Disclaimer", self.styles["SectionHeading"]))
+        disclaimer_text = (
+            "This report was automatically generated based on available data at the time of analysis. "
+            "The risk assessment provided is based on algorithmic analysis and should be considered as advisory only. "
+            "Security professionals should conduct additional investigation before making final determinations. "
+            "CatchPhish Security is not liable for actions taken based on this report."
+        )
+        content.append(Paragraph(disclaimer_text, self.styles["NormalSmall"]))
+        doc.build(content, onFirstPage=self.add_watermark, onLaterPages=self.add_watermark)
+        pdf_buffer.seek(0)
+        return pdf_buffer
+    
+@app.route("/generate-pdf", methods=["GET", "POST"])
+def generate_pdf():
+    if request.method == "POST":
+        # Check if the request contains JSON data
+        if request.is_json:
+            json_data = request.get_json()
+        # Fallback to file upload if JSON not provided
+        elif "json_file" in request.files:
+            file = request.files["json_file"]
+            if file.filename == "":
+                return "No selected file", 400
+            try:
+                json_data = json.load(file)
+            except Exception as e:
+                return f"Invalid JSON: {str(e)}", 400
+        else:
+            return "No JSON data provided", 400
+
+        generator = PhishingReportGenerator()
+        pdf_buffer = generator.generate_report(json_data)
+        return send_file(
+            pdf_buffer,
+            as_attachment=True,
+            download_name="phishing_report.pdf",
+            mimetype="application/pdf"
+        )
+    return render_template_string('''
+    <!doctype html>
+    <title>Upload JSON for Phishing Report</title>
+    <h1>Upload JSON File</h1>
+    <form method="post" enctype="multipart/form-data">
+      <input type="file" name="json_file">
+      <input type="submit" value="Upload">
+    </form>
+    ''')
+
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
+
