@@ -18,7 +18,7 @@ app.use(express.json()); // Parse JSON bodies
 
 app.use(
   cors({
-    origin: "http://localhost:3001", // Your frontend address
+    origin: "http://localhost:3000", // Your frontend address
     credentials: true, // Allow credentials (cookies)
   })
 );

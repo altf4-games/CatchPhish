@@ -4,8 +4,10 @@ import Navbar from './Navbar'; // Import the Navbar component
 
 const AboutUs = () => {
     return (
+        <>
+       
         <div className="about-container">
-            <Navbar /> {/* Include the Navbar */}
+            
             <div className="about-header">
                 <h1 className="about-title">About CatchPhish</h1>
                 <p className="about-subtitle">
@@ -38,6 +40,7 @@ const AboutUs = () => {
                 </div>
             </div>
         </div>
+        </>
     );
 };
 

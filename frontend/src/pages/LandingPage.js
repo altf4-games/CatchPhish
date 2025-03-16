@@ -390,7 +390,7 @@ function LandingPage() {
 
   return (
     <div className="landing-page">
-      <Navbar />
+      
       <main className="main-content">
         <div className="net-illustration">
           <img src="/net.png" alt="Fishing net illustration" />
