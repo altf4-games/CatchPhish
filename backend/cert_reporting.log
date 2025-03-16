@@ -164,3 +164,141 @@
 2025-03-16 16:30:57,013 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 16:30:57] "POST /analyze HTTP/1.1" 200 -
 2025-03-16 16:30:57,026 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 16:30:57] "OPTIONS /fuzzy-search HTTP/1.1" 200 -
 2025-03-16 16:32:04,150 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 16:32:04] "POST /fuzzy-search HTTP/1.1" 200 -
+2025-03-16 16:40:29,535 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5001
+2025-03-16 16:40:29,535 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-16 16:40:29,537 - werkzeug - INFO -  * Restarting with stat
+2025-03-16 16:40:32,610 - werkzeug - WARNING -  * Debugger is active!
+2025-03-16 16:40:32,614 - werkzeug - INFO -  * Debugger PIN: 199-188-288
+2025-03-16 19:16:49,223 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5001
+2025-03-16 19:16:49,223 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-16 19:16:49,231 - werkzeug - INFO -  * Restarting with stat
+2025-03-16 19:16:57,118 - werkzeug - WARNING -  * Debugger is active!
+2025-03-16 19:16:57,127 - werkzeug - INFO -  * Debugger PIN: 199-188-288
+2025-03-16 19:17:03,914 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-03-16 19:17:05,900 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-03-16 19:17:09,770 - google_genai.models - INFO - AFC remote call 1 is done.
+2025-03-16 19:17:09,970 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-03-16 19:17:10,610 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-03-16 19:17:12,046 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-03-16 19:17:12,742 - google_genai.models - INFO - AFC remote call 1 is done.
+2025-03-16 19:17:13,871 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-03-16 19:17:13,904 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:17:13,906 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:17:13,913 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:17:13,913 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:17:16,143 - google_genai.models - INFO - AFC remote call 1 is done.
+2025-03-16 19:17:16,191 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:17:16,195 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:17:17,044 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:17:17,044 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:17:17,368 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:17:17] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:17:17,938 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:17:17] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:17:18,100 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:17:18] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:17:19,030 - google_genai.models - INFO - AFC remote call 1 is done.
+2025-03-16 19:17:19,090 - google_genai.models - INFO - AFC remote call 1 is done.
+2025-03-16 19:17:19,197 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:17:19,209 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:17:19,212 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:17:19,216 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:17:19,384 - tensorflow - WARNING - 5 out of the last 5 calls to <function TensorFlowTrainer.make_predict_function.<locals>.one_step_on_data_distributed at 0x0000012A0B3BCCC0> triggered tf.function retracing. Tracing is expensive and the excessive number of tracings could be due to (1) creating @tf.function repeatedly in a loop, (2) passing tensors with different shapes, (3) passing Python objects instead of tensors. For (1), please define your @tf.function outside of the loop. For (2), @tf.function has reduce_retracing=True option that can avoid unnecessary retracing. For (3), please refer to https://www.tensorflow.org/guide/function#controlling_retracing and https://www.tensorflow.org/api_docs/python/tf/function for  more details.
+2025-03-16 19:17:19,392 - tensorflow - WARNING - 6 out of the last 6 calls to <function TensorFlowTrainer.make_predict_function.<locals>.one_step_on_data_distributed at 0x0000012A0AB26700> triggered tf.function retracing. Tracing is expensive and the excessive number of tracings could be due to (1) creating @tf.function repeatedly in a loop, (2) passing tensors with different shapes, (3) passing Python objects instead of tensors. For (1), please define your @tf.function outside of the loop. For (2), @tf.function has reduce_retracing=True option that can avoid unnecessary retracing. For (3), please refer to https://www.tensorflow.org/guide/function#controlling_retracing and https://www.tensorflow.org/api_docs/python/tf/function for  more details.
+2025-03-16 19:17:20,332 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:17:20] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:17:20,521 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:17:20] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:17:21,297 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-03-16 19:17:22,350 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:17:22] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:17:22,462 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-03-16 19:17:23,970 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-03-16 19:17:25,377 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-03-16 19:17:25,411 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:17:25,419 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:17:25,428 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:17:25,437 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:17:26,613 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:17:26] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:17:26,708 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:17:26] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:17:27,079 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:17:27,082 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:17:27,282 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:17:27,282 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:17:28,246 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:17:28] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:17:28,370 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:17:28] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:18:08,354 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-03-16 19:18:12,304 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-03-16 19:18:13,066 - google_genai.models - INFO - AFC remote call 1 is done.
+2025-03-16 19:18:13,157 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:18:13,165 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:18:14,056 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-03-16 19:18:15,869 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:18:15] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:18:16,035 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-03-16 19:18:17,035 - google_genai.models - INFO - AFC remote call 1 is done.
+2025-03-16 19:18:17,108 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:18:17,124 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:18:17,885 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-03-16 19:18:18,413 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:18:18] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:18:19,094 - google_genai.models - INFO - AFC remote call 1 is done.
+2025-03-16 19:18:19,201 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:18:19,201 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:18:20,981 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-03-16 19:18:21,454 - google_genai.models - INFO - AFC remote call 1 is done.
+2025-03-16 19:18:21,533 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:18:21,533 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:18:22,012 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:18:22] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:18:22,765 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:18:22] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:18:23,472 - google_genai.models - INFO - AFC remote call 1 is done.
+2025-03-16 19:18:23,536 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:18:23,542 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:18:24,665 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:18:24] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:18:25,456 - google_genai.models - INFO - AFC remote call 1 is done.
+2025-03-16 19:18:25,513 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:18:25,521 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:18:26,616 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:18:26] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:19:04,185 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:19:04,185 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:19:06,733 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:19:06] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:19:09,779 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-03-16 19:19:12,881 - google_genai.models - INFO - AFC remote call 1 is done.
+2025-03-16 19:19:12,942 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:19:12,950 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:19:14,874 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:19:14] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:20:02,934 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-03-16 19:20:05,527 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:20:05,543 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:20:05,544 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:20:05,578 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:20:07,470 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-03-16 19:20:08,276 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:20:08] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:20:08,810 - google_genai.models - INFO - AFC remote call 1 is done.
+2025-03-16 19:20:08,961 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:20:08,968 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:20:10,222 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:20:10] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:20:10,300 - google_genai.models - INFO - AFC remote call 1 is done.
+2025-03-16 19:20:10,344 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:20:10,360 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:20:11,216 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:20:11] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:20:11,910 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:20:11] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:20:16,657 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:20:16,670 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:20:16,677 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:20:16,700 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:20:18,216 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:20:18] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:20:19,956 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:20:19] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:20:27,891 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-03-16 19:20:31,702 - google_genai.models - INFO - AFC remote call 1 is done.
+2025-03-16 19:20:31,784 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:20:31,793 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:20:33,043 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:20:33] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:32:18,860 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5001
+2025-03-16 19:32:18,861 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-16 19:32:18,861 - werkzeug - INFO -  * Restarting with stat
+2025-03-16 19:32:24,777 - werkzeug - WARNING -  * Debugger is active!
+2025-03-16 19:32:24,784 - werkzeug - INFO -  * Debugger PIN: 199-188-288
+2025-03-16 19:33:05,160 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:33:05] "OPTIONS /analyze HTTP/1.1" 200 -
+2025-03-16 19:33:07,881 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-03-16 19:33:09,934 - google_genai.models - INFO - AFC remote call 1 is done.
+2025-03-16 19:33:10,226 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-03-16 19:33:10,233 - absl - WARNING - Error in loading the saved optimizer state. As a result, your model is starting with a freshly initialized optimizer.
+2025-03-16 19:33:12,545 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:33:12] "POST /analyze HTTP/1.1" 200 -
+2025-03-16 19:33:12,560 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:33:12] "OPTIONS /fuzzy-search HTTP/1.1" 200 -
+2025-03-16 19:34:28,206 - werkzeug - INFO - 127.0.0.1 - - [16/Mar/2025 19:34:28] "POST /fuzzy-search HTTP/1.1" 200 -

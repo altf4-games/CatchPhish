@@ -740,21 +740,44 @@ def generate_pdf():
     ''')
 
 from fuzzywuzzy import process
+from rapidfuzz import process, fuzz
+import threading
 
 
 # Load domain names from file
-def load_domains():
+LOCAL_DOMAINS = []
+
+def load_local_domains():
+    global LOCAL_DOMAINS
     try:
         with open("domain-names.txt", "r") as file:
-            return [line.strip() for line in file]
+            LOCAL_DOMAINS = [line.strip().lower() for line in file if line.strip()]
+        print("Local domains loaded successfully.")
     except Exception as e:
-        print(f"Error loading domains: {e}")
-        return []
+        print(f"Error loading domains from file: {e}")
+        LOCAL_DOMAINS = []
+
+# Preload local domains asynchronously in a background thread
+threading.Thread(target=load_local_domains, daemon=True).start()
+
+def load_domains():
+    domains = LOCAL_DOMAINS.copy()  # Use preloaded local domains
+    # Load domains from the remote URL and preprocess them
+    remote_url = "https://raw.githubusercontent.com/Phishing-Database/Phishing.Database/refs/heads/master/phishing-links-NEW-today.txt"
+    try:
+        response = requests.get(remote_url, timeout=10)
+        response.raise_for_status()
+        remote_domains = [line.strip().lower() for line in response.text.splitlines() if line.strip()]
+        domains.extend(remote_domains)
+    except Exception as e:
+        print(f"Error loading domains from URL: {e}")
+    return domains
 
 def clean_domain(url):
-    url = re.sub(r"https?://", "", url) 
-    url = url.split("/")[0] 
-    return url
+    # Remove http:// or https:// and any path after the domain
+    url = re.sub(r"https?://", "", url)
+    url = url.split("/")[0]
+    return url.lower()
 
 @app.route("/fuzzy-search", methods=["POST"])
 def fuzzy_search():
@@ -769,13 +792,14 @@ def fuzzy_search():
         if not registered_domains:
             return jsonify({"error": "Domain list is empty or could not be loaded."}), 500
         
-        matches = process.extract(query_domain, registered_domains, limit=10)
+        # Use RapidFuzz's process.extract for faster fuzzy matching
+        matches = process.extract(query_domain, registered_domains, scorer=fuzz.ratio, limit=10)
         return jsonify({"query": query_domain, "matches": matches})
     
     except Exception as e:
         print(f"Error in fuzzy search: {e}")
         return jsonify({"error": "Internal server error"}), 500
-
+    
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
 

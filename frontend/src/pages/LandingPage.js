@@ -380,7 +380,7 @@ function Dashboard() {
               <ul className="test !list-none" style={{ listStyleType: "none" }}>
                 {fuzzyResults.map((match, index) => (
                   <li key={index}>
-                    {match[0]} - Score: {match[1]}
+                    {match[0]} - Score: {parseInt(match[1])}
                   </li>
                 ))}
               </ul>
