@@ -11,3 +11,5 @@ keras
 urllib3
 python-docx
 reportlab
+fuzzywuzzy
+rapidfuzz
