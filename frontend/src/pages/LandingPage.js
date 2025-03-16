@@ -12,9 +12,10 @@ function Dashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [certInReportStatus, setCertInReportStatus] = useState(null);
   const [certInReportLoading, setCertInReportLoading] = useState(false);
+  const [fuzzyResults, setFuzzyResults] = useState([]);
+  const [fuzzyLoading, setFuzzyLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Check authentication status on component mount
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -29,7 +30,6 @@ function Dashboard() {
         console.error("Error checking authentication:", err);
       }
     };
-
     checkAuth();
   }, []);
 
@@ -44,7 +44,7 @@ function Dashboard() {
       const response = await fetch("http://localhost:5000/api/reports", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // Ensure cookies are sent
+        credentials: "include",
         body: JSON.stringify(reportData),
       });
       const data = await response.json();
@@ -68,7 +68,6 @@ function Dashboard() {
     URL.revokeObjectURL(url);
   };
 
-  // NEW: Download PDF using backend-generated PDF
   const handleDownloadPDF = async () => {
     if (!result) return;
     try {
@@ -107,7 +106,6 @@ function Dashboard() {
       const data = response.data;
       console.log("API Response:", data);
 
-      // Weighted Phishing Detection Calculation
       const vtScore =
         (data.virustotal.malicious_engines /
           Math.max(1, data.virustotal.total_engines)) *
@@ -118,8 +116,6 @@ function Dashboard() {
       const suspiciousScore = (data.suspicious_indicators?.length || 0) * 5;
       const riskScore =
         vtScore + openPhishScore + geminiScore + mlScore + suspiciousScore;
-
-      // Phishing threshold increased to 60
       const isPhishing = riskScore >= 60;
       const status = isPhishing ? "phishing" : "safe";
       const actionTaken = isPhishing ? "Reported as Phishing" : "Marked Safe";
@@ -131,6 +127,21 @@ function Dashboard() {
         actionTaken,
         status,
       });
+
+      setFuzzyLoading(true);
+      try {
+        const fuzzyResponse = await axios.post(
+          "http://127.0.0.1:5001/fuzzy-search",
+          { domain: url }
+        );
+        const fuzzyData = fuzzyResponse.data;
+        console.log("Fuzzy Search Results:", fuzzyData);
+        setFuzzyResults(fuzzyData.matches);
+      } catch (fuzzyErr) {
+        console.error("Fuzzy search error:", fuzzyErr);
+      } finally {
+        setFuzzyLoading(false);
+      }
 
       if (isAuthenticated) {
         try {
@@ -153,7 +164,6 @@ function Dashboard() {
     }
   };
 
-  // Function to handle CERT-In report generation and submission
   const handleCertInReport = async () => {
     if (!result) return;
     setCertInReportLoading(true);
@@ -187,12 +197,11 @@ function Dashboard() {
     }
   };
 
-  // Function to determine risk level color
   const getRiskColor = (score) => {
-    if (score >= 70) return "#FF3B30"; // High risk - Red
-    if (score >= 40) return "#FF9500"; // Medium risk - Orange
-    if (score >= 20) return "#FFCC00"; // Low risk - Yellow
-    return "#34C759"; // Very low risk - Green
+    if (score >= 70) return "#FF3B30";
+    if (score >= 40) return "#FF9500";
+    if (score >= 20) return "#FFCC00";
+    return "#34C759";
   };
 
   return (
@@ -349,6 +358,35 @@ function Dashboard() {
             </div>
           )}
 
+          {fuzzyLoading && (
+            <div className="fuzzy-loading">
+              <div className="loading-bar"></div>
+            </div>
+          )}
+
+          {fuzzyResults.length > 0 && (
+            <div
+              className="fuzzy-panel"
+              style={{
+                marginTop: "1rem",
+                padding: "1rem",
+                backgroundColor: "#1f1f1f",
+                borderRadius: "4px",
+              }}
+            >
+              <h3>
+                Fuzzy Search Results (Today: {new Date().toLocaleDateString()})
+              </h3>
+              <ul className="test !list-none" style={{ listStyleType: "none" }}>
+                {fuzzyResults.map((match, index) => (
+                  <li key={index}>
+                    {match[0]} - Score: {match[1]}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <div
             className="certin-info"
             style={{
@@ -396,7 +434,10 @@ function LandingPage() {
   };
 
   return (
-    <div className="landing-page">
+    <div
+      className="landing-page"
+      style={{ backgroundColor: "#121212", color: "white" }}
+    >
       <Navbar />
       <main className="main-content">
         <div className="net-illustration">
@@ -410,7 +451,7 @@ function LandingPage() {
           </div>
           <p className="description">
             Analyze suspicious domains, IPs and URLs to detect phishing and
-            malicious sites automatically share them with the security
+            malicious sites automatically and share them with the security
             community.
           </p>
           <Dashboard />
@@ -443,6 +484,40 @@ function LandingPage() {
       <div className="footer">
         <p>Copyright © CatchPhish Securities, All rights reserved</p>
       </div>
+      <style>{`
+        body, .landing-page {
+          background-color: #121212;
+          color: white;
+        }
+        .fuzzy-loading {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-top: 1rem;
+        }
+        .loading-bar {
+          width: 100%;
+          max-width: 300px;
+          height: 4px;
+          background: #555;
+          position: relative;
+          overflow: hidden;
+        }
+        .loading-bar::before {
+          content: "";
+          position: absolute;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: #34C759;
+          animation: loading 1.5s infinite;
+        }
+        @keyframes loading {
+          0% { left: -100%; width: 100%; }
+          50% { left: 0%; width: 100%; }
+          100% { left: 100%; width: 0%; }
+        }
+      `}</style>
     </div>
   );
 }

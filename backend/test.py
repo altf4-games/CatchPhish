@@ -739,6 +739,43 @@ def generate_pdf():
     </form>
     ''')
 
+from fuzzywuzzy import process
+
+
+# Load domain names from file
+def load_domains():
+    try:
+        with open("domain-names.txt", "r") as file:
+            return [line.strip() for line in file]
+    except Exception as e:
+        print(f"Error loading domains: {e}")
+        return []
+
+def clean_domain(url):
+    url = re.sub(r"https?://", "", url) 
+    url = url.split("/")[0] 
+    return url
+
+@app.route("/fuzzy-search", methods=["POST"])
+def fuzzy_search():
+    try:
+        data = request.get_json()
+        if not data or "domain" not in data:
+            return jsonify({"error": "Domain parameter is missing."}), 400
+        
+        query_domain = clean_domain(data["domain"])
+        registered_domains = load_domains()
+        
+        if not registered_domains:
+            return jsonify({"error": "Domain list is empty or could not be loaded."}), 500
+        
+        matches = process.extract(query_domain, registered_domains, limit=10)
+        return jsonify({"query": query_domain, "matches": matches})
+    
+    except Exception as e:
+        print(f"Error in fuzzy search: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
 
