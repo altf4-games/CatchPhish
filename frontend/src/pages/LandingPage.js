@@ -109,13 +109,14 @@ function Dashboard() {
       const vtScore =
         (data.virustotal.malicious_engines /
           Math.max(1, data.virustotal.total_engines)) *
-        30;
-      const openPhishScore = data.openphish_flagged ? 20 : 0;
-      const geminiScore = data.gemini_analysis.risk_score * 10;
-      const mlScore = data.ml_prediction * 0.3;
-      const suspiciousScore = (data.suspicious_indicators?.length || 0) * 5;
+        40;
+      const geminiScore = data.gemini_analysis.risk_score * 40;
+      const mlScore = data.ml_prediction * 0.4;
+      const openPhishScore = data.openphish_flagged ? 10 : 0;
+      const suspiciousScore = (data.suspicious_indicators?.length || 0) * 1;
+
       const riskScore =
-        vtScore + openPhishScore + geminiScore + mlScore + suspiciousScore;
+        vtScore + geminiScore + mlScore + openPhishScore + suspiciousScore;
       const isPhishing = riskScore >= 60;
       const status = isPhishing ? "phishing" : "safe";
       const actionTaken = isPhishing ? "Reported as Phishing" : "Marked Safe";
