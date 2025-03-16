@@ -1,0 +1,408 @@
+/* Enhanced Analytics & Insights Styling */
+
+/* Main container */
+.analytics-container {
+    background-color: #0f172a;
+    color: #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    padding: 24px;
+    margin-bottom: 30px;
+  }
+  
+  /* Page heading */
+  .analytics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #2d3748;
+    padding-bottom: 16px;
+  }
+  
+  .analytics-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #f8fafc;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .analytics-header h2 svg {
+    stroke: #60a5fa;
+  }
+  
+  /* Navigation Tabs */
+  .analytics-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #2d3748;
+    padding-bottom: 2px;
+  }
+  
+  .tab-button {
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    cursor: pointer;
+    border-radius: 8px 8px 0 0;
+    transition: all 0.2s ease;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .tab-button svg {
+    stroke-width: 2;
+    width: 16px;
+    height: 16px;
+  }
+  
+  .tab-button:hover {
+    color: #f8fafc;
+    background-color: rgba(51, 65, 85, 0.4);
+  }
+  
+  .tab-button.active {
+    color: #60a5fa;
+    background-color: #1e293b;
+  }
+  
+  .tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #60a5fa;
+    border-radius: 3px 3px 0 0;
+  }
+  
+  /* Card styles */
+  .analytics-card {
+    background-color: #1e293b;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #2d3748;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .analytics-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+  
+  .analytics-card h3 {
+    color: #f8fafc;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .analytics-card h3 svg {
+    stroke: #60a5fa;
+  }
+  
+  /* Stats grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  
+  .stat-item {
+    background-color: #1e293b;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #2d3748;
+    transition: all 0.2s ease;
+  }
+  
+  .stat-item:hover {
+    border-color: #4b5563;
+    transform: translateY(-3px);
+  }
+  
+  .stat-item .stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+  
+  .stat-item:nth-child(1) .stat-icon {
+    background-color: rgba(14, 165, 233, 0.2);
+    color: #38bdf8;
+  }
+  
+  .stat-item:nth-child(2) .stat-icon {
+    background-color: rgba(34, 197, 94, 0.2);
+    color: #4ade80;
+  }
+  
+  .stat-item:nth-child(3) .stat-icon {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+  }
+  
+  .stat-item:nth-child(4) .stat-icon {
+    background-color: rgba(168, 85, 247, 0.2);
+    color: #c084fc;
+  }
+  
+  .stat-item h4 {
+    color: #94a3b8;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  
+  .stat-item .stat-value {
+    color: #f8fafc;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  
+  .stat-item .stat-label {
+    color: #64748b;
+    font-size: 12px;
+  }
+  
+  /* Chart customization */
+  .recharts-wrapper {
+    margin: 0 auto;
+  }
+  
+  .recharts-default-tooltip {
+    background-color: #1e293b !important;
+    border: 1px solid #475569 !important;
+    border-radius: 6px !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
+  }
+  
+  .recharts-tooltip-label {
+    color: #f8fafc !important;
+    font-weight: 600 !important;
+    margin-bottom: 4px !important;
+  }
+  
+  .recharts-tooltip-item {
+    color: #cbd5e1 !important;
+  }
+  
+  .recharts-cartesian-axis-tick-value {
+    fill: #94a3b8 !important;
+    font-size: 12px !important;
+  }
+  
+  .recharts-legend-item-text {
+    color: #cbd5e1 !important;
+  }
+  
+  .recharts-reference-line line {
+    stroke: #475569 !important;
+    stroke-width: 1 !important;
+    stroke-dasharray: 3 3;
+  }
+  
+  .recharts-cartesian-grid line {
+    stroke: #334155 !important;
+    stroke-width: 0.5 !important;
+  }
+  
+  /* Line chart customizations */
+  .line-chart-container {
+    padding: 16px 0;
+  }
+  
+  .line-chart-container .recharts-line-dot {
+    fill: #0f172a;
+    stroke-width: 2;
+  }
+  
+  /* Bar chart customizations */
+  .bar-chart-container {
+    padding: 16px 0;
+  }
+  
+  .bar-chart-container .recharts-rectangle.recharts-bar-rectangle {
+    opacity: 0.8;
+  }
+  
+  .bar-chart-container .recharts-rectangle.recharts-bar-rectangle:hover {
+    opacity: 1;
+  }
+  
+  /* Pie chart customizations */
+  .pie-chart-container {
+    padding: 16px 0;
+  }
+  
+  .pie-chart-container .recharts-sector:hover {
+    opacity: 0.9;
+  }
+  
+  /* Risk scores table */
+  .risk-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 16px;
+    color: #e2e8f0;
+  }
+  
+  .risk-table th {
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 500;
+    color: #94a3b8;
+    border-bottom: 1px solid #334155;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .risk-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #334155;
+    font-size: 14px;
+  }
+  
+  .risk-table tbody tr {
+    transition: background-color 0.2s ease;
+  }
+  
+  .risk-table tbody tr:hover {
+    background-color: rgba(51, 65, 85, 0.4);
+  }
+  
+  .risk-score-bar {
+    width: 100%;
+    height: 8px;
+    background-color: #334155;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .risk-score-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+  
+  .risk-score-fill.high {
+    background-color: #ef4444;
+  }
+  
+  .risk-score-fill.medium {
+    background-color: #f59e0b;
+  }
+  
+  .risk-score-fill.low {
+    background-color: #10b981;
+  }
+  
+  .status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  .status-badge.phishing {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+  }
+  
+  .status-badge.safe {
+    background-color: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+  }
+  
+  .status-badge.pending {
+    background-color: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+  }
+  
+  /* Info box */
+  .info-box {
+    background-color: rgba(14, 165, 233, 0.1);
+    border: 1px solid rgba(14, 165, 233, 0.3);
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 24px;
+    color: #7dd3fc;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .info-box svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  
+  .info-box p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  .info-box p strong {
+    font-weight: 600;
+    color: #38bdf8;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .stats-grid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+    
+    .tab-button {
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+    
+    .analytics-card {
+      padding: 16px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .stats-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    
+    .tab-button {
+      flex: 1;
+      justify-content: center;
+    }
+    
+    .tab-button span {
+      display: none;
+    }
+    
+    .tab-button svg {
+      margin: 0;
+    }
+  }

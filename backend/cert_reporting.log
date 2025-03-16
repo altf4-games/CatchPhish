@@ -270,3 +270,7 @@
 2025-03-16 21:32:08,811 - werkzeug - INFO -  * Restarting with stat
 2025-03-16 21:32:13,908 - werkzeug - WARNING -  * Debugger is active!
 2025-03-16 21:32:13,919 - werkzeug - INFO -  * Debugger PIN: 125-237-105
+2025-03-16 21:33:01,151 - werkzeug - INFO -  * Detected change in 'C:\\Users\\krish hadkar\\Documents\\catchphish\\backend\\test.py', reloading
+2025-03-16 21:33:01,976 - werkzeug - INFO -  * Restarting with stat
+2025-03-16 21:33:07,182 - werkzeug - WARNING -  * Debugger is active!
+2025-03-16 21:33:07,196 - werkzeug - INFO -  * Debugger PIN: 125-237-105
