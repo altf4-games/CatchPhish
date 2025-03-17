@@ -43,7 +43,7 @@ function Resources() {
           <div className="bg-blue-900/30 rounded-2xl overflow-hidden shadow-xl hover:shadow-blue-700/20 transition-all duration-300 hover:-translate-y-2 backdrop-blur-sm border border-blue-500/20 group">
             <div className="h-56 overflow-hidden relative">
               <img
-                src="/api/placeholder/400/320"
+                src="phishing-awareness.png"
                 alt="Phishing Awareness"
                 className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
               />
@@ -91,7 +91,7 @@ function Resources() {
           <div className="bg-blue-900/30 rounded-2xl overflow-hidden shadow-xl hover:shadow-blue-700/20 transition-all duration-300 hover:-translate-y-2 backdrop-blur-sm border border-blue-500/20 group">
             <div className="h-56 overflow-hidden relative">
               <img
-                src="/api/placeholder/400/320"
+                src="browser-addons.png"
                 alt="Browser Addons"
                 className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
               />
@@ -137,7 +137,7 @@ function Resources() {
           <div className="bg-blue-900/30 rounded-2xl overflow-hidden shadow-xl hover:shadow-blue-700/20 transition-all duration-300 hover:-translate-y-2 backdrop-blur-sm border border-blue-500/20 group">
             <div className="h-56 overflow-hidden relative">
               <img
-                src="/api/placeholder/400/320"
+                src="github-phishing.png"
                 alt="Open-Source Tools"
                 className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
               />
