@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Phishing Site Blocked</title>
+  <meta charset="utf-8">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 40px;
+      background-color: #f8f9fa;
+      color: #333;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .logo {
+      height: 80px;
+      margin-bottom: 20px;
+    }
+    
+    h1 {
+      color: #d32f2f;
+      margin: 0;
+      font-size: 28px;
+    }
+    
+    .warning-icon {
+      font-size: 64px;
+      color: #d32f2f;
+      display: block;
+      text-align: center;
+      margin: 20px 0;
+    }
+    
+    .url-display {
+      background-color: #ffebee;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 20px 0;
+      word-break: break-all;
+      text-align: center;
+      font-family: monospace;
+      font-size: 16px;
+    }
+    
+    .info-section {
+      margin: 30px 0;
+    }
+    
+    h2 {
+      color: #246AB3;
+      font-size: 20px;
+      margin-top: 0;
+    }
+    
+    ul {
+      margin-top: 10px;
+    }
+    
+    .button-row {
+      display: flex;
+      justify-content: center;
+      margin-top: 30px;
+      gap: 15px;
+    }
+    
+    .button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      text-align: center;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+    
+    .button-primary {
+      background-color: #246AB3;
+      color: white;
+    }
+    
+    .button-primary:hover {
+      background-color: #1c5490;
+    }
+    
+    .button-danger {
+      background-color: #d32f2f;
+      color: white;
+    }
+    
+    .button-danger:hover {
+      background-color: #b71c1c;
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #757575;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="images/icon128.png" class="logo" alt="CatchPhish Logo">
+      <h1>Phishing Site Blocked</h1>
+    </div>
+    
+    <div class="warning-icon">⚠️</div>
+    
+    <p>CatchPhish Protector has blocked access to this website because it has been identified as a potential phishing site that may attempt to steal your personal information.</p>
+    
+    <div class="url-display" id="blockedUrl">
+      <!-- URL will be inserted here -->
+    </div>
+    
+    <div class="info-section">
+      <h2>Why was this site blocked?</h2>
+      <p>This website displays characteristics commonly associated with phishing attempts:</p>
+      <ul>
+        <li>It may be impersonating a legitimate website</li>
+        <li>It could be attempting to steal your login credentials or personal information</li>
+        <li>The site might contain malicious code or links</li>
+        <li>Our AI detection system flagged it as high-risk</li>
+      </ul>
+    </div>
+    
+    <div class="info-section">
+      <h2>What should I do?</h2>
+      <p>We recommend the following:</p>
+      <ul>
+        <li>Close this tab and do not attempt to visit this site</li>
+        <li>If you received a link to this site in an email, message, or social media post, consider it suspicious</li>
+        <li>If you were expecting to visit a legitimate website, access it by typing the official URL directly in your browser</li>
+        <li>Report this site using the button below to help protect others</li>
+      </ul>
+    </div>
+    
+    <div class="button-row">
+      <a href="#" id="backButton" class="button button-primary">Go Back to Safety</a>
+      <a href="#" id="reportButton" class="button button-danger">Report This Site</a>
+      <a href="#" id="continueButton" class="button">Proceed Anyway (Not Recommended)</a>
+    </div>
+    
+    <div class="footer">
+      <p>CatchPhish Protector | Keeping you safe from phishing attacks</p>
+    </div>
+  </div>
+  
+  <script>
+    // Parse URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const blockedSite = urlParams.get('site') || "Unknown site";
+    const fullUrl = urlParams.get('url') || "";
+    
+    // Display blocked URL
+    document.getElementById('blockedUrl').textContent = fullUrl || blockedSite;
+    
+    // Set up button actions
+    document.getElementById('backButton').addEventListener('click', function(e) {
+      e.preventDefault();
+      window.history.back();
+    });
+    
+    document.getElementById('reportButton').addEventListener('click', function(e) {
+      e.preventDefault();
+      const reportUrl = `https://example.com/report?url=${encodeURIComponent(fullUrl)}`;
+      window.open(reportUrl, '_blank');
+    });
+    
+    document.getElementById('continueButton').addEventListener('click', function(e) {
+      e.preventDefault();
+      if (confirm("Warning: Proceeding to this site may put your personal information at risk. Are you sure you want to continue?")) {
+        window.location.href = fullUrl;
+      }
+    });
+  </script>
+</body>
+</html>

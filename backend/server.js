@@ -6,22 +6,20 @@ const app = express();
 const connectDB = require("./config/db");
 const reportRoutes = require("./routes/reports");
 const userRoutes = require("./routes/userRoutes");
-const analyticsRoutes = require('./routes/analytics.js');
+const analyticsRoutes = require("./routes/analytics.js");
 // Import Report model - add this line
 const Report = mongoose.model(
   "Report",
   require("./models/report.model").schema
 );
-
-// Middleware - Order is important!
-app.use(express.json()); // Parse JSON bodies
-app.use('/api/analytics', analyticsRoutes);
 app.use(
   cors({
     origin: "http://localhost:3000", // Your frontend address
     credentials: true, // Allow credentials (cookies)
   })
 );
+// Middleware - Order is important!
+app.use(express.json()); // Parse JSON bodies
 
 app.use(
   session({
@@ -57,6 +55,7 @@ app.use("/api/reports", authenticateUser, reportRoutes);
 // Routes
 app.use("/api/users", userRoutes);
 app.use("/api/reports", reportRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 // Route redirects for backward compatibility
 app.post("/login", (req, res) => {
