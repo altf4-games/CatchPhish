@@ -170,10 +170,18 @@ function Dashboard() {
     setCertInReportLoading(true);
     setCertInReportStatus(null);
     try {
+      // Fetch the current user's info to get the username
+      const userResponse = await fetch("http://localhost:5000/api/users/me", {
+        method: "GET",
+        credentials: "include",
+      });
+      const userData = await userResponse.json();
+      const username = userData.username; // Assumes the response contains a "username" field
+
       const jsonData = JSON.stringify(result);
       const response = await axios.post(
         "http://127.0.0.1:5001/generate-certin-report",
-        { reportData: jsonData }
+        { reportData: jsonData, username: username } // New param "username" added
       );
       if (response.data.success) {
         setCertInReportStatus({

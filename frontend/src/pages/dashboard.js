@@ -1,6 +1,7 @@
 "use client";
-import InsightsAnalytics from './insight';
+import InsightsAnalytics from "./insight";
 import { useState, useEffect } from "react";
+import ReportTracker from "./ReportTracker";
 import "./dashboard.css";
 
 // StatsCards Component
@@ -8,7 +9,10 @@ function StatsCards({ stats }) {
   return (
     <div className="stats-container">
       {stats.map((stat, index) => (
-        <div key={index} className={`stat-card ${stat.title.toLowerCase().replace(' ', '-')}`}>
+        <div
+          key={index}
+          className={`stat-card ${stat.title.toLowerCase().replace(" ", "-")}`}
+        >
           <h3>
             {stat.title}
             {stat.icon && <span className="stat-icon">{stat.icon}</span>}
@@ -41,8 +45,8 @@ function Sidebar({ activeSection, setActiveSection }) {
       </div>
       <nav className="sidebar-nav">
         {menuItems.map((item, index) => (
-          <div 
-            key={index} 
+          <div
+            key={index}
             className={`nav-item ${activeSection === item.id ? "active" : ""}`}
             onClick={() => setActiveSection(item.id)}
           >
@@ -73,23 +77,28 @@ function SitesTable({ data }) {
   });
 
   const pageCount = Math.ceil(sortedData.length / itemsPerPage);
-  const currentData = sortedData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const currentData = sortedData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= pageCount) {
       setCurrentPage(newPage);
-      document.querySelector('.table-header')?.scrollIntoView({ behavior: 'smooth' });
+      document
+        .querySelector(".table-header")
+        ?.scrollIntoView({ behavior: "smooth" });
     }
   };
 
   const getBadgeClass = (status) => {
-    switch(status?.toLowerCase()) {
-      case 'phishing':
-        return 'phishing';
-      case 'safe':
-        return 'safe';
+    switch (status?.toLowerCase()) {
+      case "phishing":
+        return "phishing";
+      case "safe":
+        return "safe";
       default:
-        return 'pending';
+        return "pending";
     }
   };
 
@@ -97,14 +106,14 @@ function SitesTable({ data }) {
     try {
       const date = new Date(dateString);
       return date.toLocaleString(undefined, {
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
       });
     } catch (e) {
-      return 'Invalid Date';
+      return "Invalid Date";
     }
   };
 
@@ -119,10 +128,7 @@ function SitesTable({ data }) {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <select 
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-          >
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>
           </select>
@@ -146,15 +152,22 @@ function SitesTable({ data }) {
                   <td>{item.actionTaken}</td>
                   <td>{formatDate(item.date || item.dateSubmitted)}</td>
                   <td>
-                    <span className={`status-badge ${getBadgeClass(item.status)}`}>
-                      {item.status ? item.status.charAt(0).toUpperCase() + item.status.slice(1) : 'Unknown'}
+                    <span
+                      className={`status-badge ${getBadgeClass(item.status)}`}
+                    >
+                      {item.status
+                        ? item.status.charAt(0).toUpperCase() +
+                          item.status.slice(1)
+                        : "Unknown"}
                     </span>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="4" className="no-data">No sites found matching your criteria</td>
+                <td colSpan="4" className="no-data">
+                  No sites found matching your criteria
+                </td>
               </tr>
             )}
           </tbody>
@@ -162,14 +175,16 @@ function SitesTable({ data }) {
       </div>
       {pageCount > 1 && (
         <div className="pagination">
-          <button 
+          <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
             ← Previous
           </button>
-          <span>Page {currentPage} of {pageCount}</span>
-          <button 
+          <span>
+            Page {currentPage} of {pageCount}
+          </span>
+          <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === pageCount}
           >
@@ -197,8 +212,8 @@ function Dashboard() {
       method: "GET",
       credentials: "include",
     })
-      .then(response => response.json())
-      .then(sessionData => {
+      .then((response) => response.json())
+      .then((sessionData) => {
         console.log("Session check:", sessionData);
         if (!sessionData.authenticated) {
           window.location.href = "/login";
@@ -209,13 +224,13 @@ function Dashboard() {
           credentials: "include",
         });
       })
-      .then(response => {
+      .then((response) => {
         if (!response.ok) {
           throw new Error(`Authentication error: ${response.status}`);
         }
         return response.json();
       })
-      .then(userData => {
+      .then((userData) => {
         console.log("User data:", userData);
         setUsername(userData.username);
         return fetch("http://localhost:5000/api/reports/user", {
@@ -223,13 +238,13 @@ function Dashboard() {
           credentials: "include",
         });
       })
-      .then(response => {
+      .then((response) => {
         if (!response.ok) {
           throw new Error(`Failed to fetch site data: ${response.status}`);
         }
         return response.json();
       })
-      .then(siteData => {
+      .then((siteData) => {
         console.log("Site data:", siteData);
         if (!Array.isArray(siteData)) {
           console.error("Site data is not an array:", siteData);
@@ -237,20 +252,24 @@ function Dashboard() {
         }
         setUserData(siteData);
         const totalSites = siteData.length;
-        const phishingSites = siteData.filter(site => site.status === "phishing").length;
-        const safeSites = siteData.filter(site => site.status === "safe").length;
-        const pendingSites = siteData.filter(site => 
-          site.status !== "phishing" && site.status !== "safe"
+        const phishingSites = siteData.filter(
+          (site) => site.status === "phishing"
+        ).length;
+        const safeSites = siteData.filter(
+          (site) => site.status === "safe"
+        ).length;
+        const pendingSites = siteData.filter(
+          (site) => site.status !== "phishing" && site.status !== "safe"
         ).length;
         setStats([
           { title: "Total Sites", value: totalSites, icon: "🔍" },
           { title: "Phishing", value: phishingSites, icon: "⚠" },
           { title: "Safe", value: safeSites, icon: "✅" },
-          { title: "Pending", value: pendingSites, icon: "⏳" }
+          { title: "Pending", value: pendingSites, icon: "⏳" },
         ]);
         setLoading(false);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Error fetching data:", error);
         if (error.message !== "Not authenticated") {
           setError(error.message);
@@ -262,7 +281,7 @@ function Dashboard() {
   // Render the appropriate section based on activeSection state
   const renderSection = () => {
     switch (activeSection) {
-      case 'dashboard':
+      case "dashboard":
         return (
           <div className="p-6">
             <h1 className="text-2xl font-bold mb-6">Welcome, {username}</h1>
@@ -270,16 +289,16 @@ function Dashboard() {
             <SitesTable data={userData} />
           </div>
         );
-      case 'takedown':
+      case "takedown":
         return (
           <div className="p-6">
             <h1 className="text-2xl font-bold mb-6">Takedown Tracker</h1>
-            {/* Insert your takedown tracker content here */}
+            <ReportTracker />
           </div>
         );
-      case 'insights':
+      case "insights":
         return <InsightsAnalytics />;
-      case 'settings':
+      case "settings":
         return (
           <div className="p-6">
             <h1 className="text-2xl font-bold mb-6">Settings</h1>
@@ -298,22 +317,25 @@ function Dashboard() {
   if (error) {
     return (
       <div className="dashboard">
-        <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
+        <Sidebar
+          activeSection={activeSection}
+          setActiveSection={setActiveSection}
+        />
         <div className="dashboard-content">
           <div className="error-container">
             <h2>Error loading dashboard</h2>
             <p>{error}</p>
             <p>Please ensure you are logged in and try refreshing the page.</p>
-            <button 
+            <button
               onClick={() => window.location.reload()}
               style={{
-                marginTop: '20px',
-                padding: '10px 20px',
-                background: 'rgba(231, 76, 60, 0.2)',
-                border: '1px solid rgba(231, 76, 60, 0.5)',
-                borderRadius: '8px',
-                color: '#ffffff',
-                cursor: 'pointer'
+                marginTop: "20px",
+                padding: "10px 20px",
+                background: "rgba(231, 76, 60, 0.2)",
+                border: "1px solid rgba(231, 76, 60, 0.5)",
+                borderRadius: "8px",
+                color: "#ffffff",
+                cursor: "pointer",
               }}
             >
               Retry
@@ -327,7 +349,10 @@ function Dashboard() {
   if (loading) {
     return (
       <div className="dashboard">
-        <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
+        <Sidebar
+          activeSection={activeSection}
+          setActiveSection={setActiveSection}
+        />
         <div className="dashboard-content">
           <div className="loading">
             <div className="loading-spinner"></div>
@@ -340,7 +365,10 @@ function Dashboard() {
 
   return (
     <div className="dashboard flex h-screen bg-gray-900 text-white">
-      <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
+      <Sidebar
+        activeSection={activeSection}
+        setActiveSection={setActiveSection}
+      />
       <div className="dashboard-content flex-1 overflow-y-auto">
         {renderSection()}
       </div>

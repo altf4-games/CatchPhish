@@ -1,3 +1,5 @@
 node_modules
 screenshots
 myenv
+*.db
+cert_re

@@ -1,13 +1,20 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import Login from "./pages/LoginPage";
 import Register from "./pages/register";
 import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/dashboard";
-import AboutUs from './pages/about';
-import Services from './pages/services';
+import AboutUs from "./pages/about";
+import Services from "./pages/services";
 import Home from "./pages/LandingPage";
 import Resources from "./pages/resources";
+import ReportTracker from "./pages/ReportTracker";
+
 function App() {
   return (
     <Router>
@@ -22,6 +29,7 @@ function App() {
         <Route path="/about" element={<AboutUs />} />
         <Route path="/services" element={<Services />} />
         <Route path="/resources" element={<Resources />} />
+        <Route path="/tracker" element={<ReportTracker />} />
         {/* Catch all unmatched routes and redirect to login */}
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>

@@ -24,6 +24,8 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+# NEW: Import sqlite3 for database storage
+import sqlite3
 
 app = Flask(__name__)
 CORS(app)
@@ -54,12 +56,39 @@ if not os.path.exists(SCREENSHOT_DIR):
 for dir_path in [CONFIG["output_dir"], CONFIG["processed_dir"]]:
     os.makedirs(dir_path, exist_ok=True)
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[logging.FileHandler("cert_reporting.log"), logging.StreamHandler()]
-)
-logger = logging.getLogger("cert_reporter")
+# logging.basicConfig(
+#     level=logging.INFO,
+#     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+#     handlers=[logging.FileHandler("cert_reporting.log"), logging.StreamHandler()]
+# )
+# logger = logging.getLogger("cert_reporter")
+
+# NEW: SQLite database helper functions and initialization
+
+def get_db_connection():
+    conn = sqlite3.connect("reports.db")
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def init_db():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS certin_reports (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT,
+            domain TEXT,
+            report_file_path TEXT,
+            phishing_details TEXT,
+            status TEXT,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+# Initialize the database on startup
+init_db()
 
 def get_dns_records(domain):
     records = {"A": [], "NS": [], "MX": []}
@@ -370,6 +399,8 @@ def generate_certin_report():
     try:
         data = request.json
         report_data = json.loads(data['reportData'])
+        # NEW: Expect username to be provided in the payload
+        username = data.get("username", "unknown_user")
         domain = report_data.get('domain', 'unknown domain')
         phishing_details, output_path = process_phishing_report(report_data)
         print(phishing_details, output_path)
@@ -382,6 +413,15 @@ def generate_certin_report():
                 phishing_details
             )
             if success:
+                # NEW: Store the report details in the SQLite database
+                conn = get_db_connection()
+                cursor = conn.cursor()
+                cursor.execute("""
+                    INSERT INTO certin_reports (username, domain, report_file_path, phishing_details, status)
+                    VALUES (?, ?, ?, ?, ?)
+                """, (username, domain, output_path, json.dumps(phishing_details), "sent"))
+                conn.commit()
+                conn.close()
                 return jsonify({
                     'success': True,
                     'message': 'CERT-In report successfully generated and sent.'
@@ -402,6 +442,25 @@ def generate_certin_report():
             'success': False,
             'message': f'Error processing request: {str(e)}'
         })
+
+# NEW: Endpoint to retrieve all reports for a specific user.
+@app.route('/get-reports', methods=['GET'])
+def get_reports():
+    username = request.args.get("username")
+    if not username:
+        return jsonify({"error": "Username is required."}), 400
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM certin_reports WHERE username = ?", (username,))
+        rows = cursor.fetchall()
+        conn.close()
+        reports = [dict(row) for row in rows]
+        return jsonify({"reports": reports})
+    except Exception as e:
+        logger.error(f"Error retrieving reports: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
 
 class PhishingReportGenerator:
     def __init__(self):
