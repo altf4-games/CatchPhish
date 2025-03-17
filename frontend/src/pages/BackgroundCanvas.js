@@ -1,9 +1,103 @@
 import React, { useEffect, useRef } from 'react';
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 const BackgroundCanvas = () => {
   const canvasRef = useRef(null);
+  const threeContainerRef = useRef(null);
   
   useEffect(() => {
+    // Set up THREE.js renderer for shark
+    const threeContainer = threeContainerRef.current;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    
+    // Create THREE.js scene
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(70, width / height, 0.1, 1000);
+    camera.position.z = 8;
+    
+    const renderer = new THREE.WebGLRenderer({ 
+      alpha: true,
+      antialias: true 
+    });
+    renderer.setSize(width, height);
+    renderer.setClearColor(0x000000, 0); // Transparent background
+    renderer.setPixelRatio(window.devicePixelRatio); // Improve rendering quality
+    threeContainer.appendChild(renderer.domElement);
+    
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0x404040, 2);
+    scene.add(ambientLight);
+    
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(1, 1, 1);
+    scene.add(directionalLight);
+    
+    // Add blue-tinted rim light
+    const rimLight = new THREE.DirectionalLight(0x6080ff, 0.8);
+    rimLight.position.set(-2, 1, -1);
+    scene.add(rimLight);
+    
+    // Create a shark object as a placeholder before the model loads
+    const sharkBox = new THREE.Mesh(
+      new THREE.BoxGeometry(1, 0.5, 2),
+      new THREE.MeshBasicMaterial({ color: 0x888888, wireframe: true })
+    );
+    scene.add(sharkBox);
+    
+    // Updated camera position to see the scene properly
+    camera.position.set(100, 20, 100);
+    camera.lookAt(100, 0, 0);
+    
+    // Shark movement variables - with increased distance and speed
+    const sharkData = {
+      object: sharkBox,
+      speed: 0.3, // Increased speed for longer movement
+      direction: 1, // 1 for right, -1 for left
+      bounds: { min: -25, max: 25 } // Expanded bounds for longer movement distance
+    };
+    
+    // Load shark model
+    const loader = new GLTFLoader();
+    loader.load(
+      '/great_white_shark.glb', // Replace with your actual shark GLB path
+      (gltf) => {
+        console.log('Shark model loaded successfully');
+        
+        // Remove placeholder
+        scene.remove(sharkBox);
+        
+        // Add the real shark
+        const shark = gltf.scene;
+        shark.scale.set(0.1, 0.1, 0.1);
+        shark.position.set(-25, 0, 0); // Start far left with expanded bounds
+        shark.rotation.y = Math.PI / 2; // Rotate to face right direction
+        scene.add(shark);
+        
+        // Update the shark reference
+        sharkData.object = shark;
+        
+        // Setup animations if they exist
+        if (gltf.animations && gltf.animations.length > 0) {
+          const mixer = new THREE.AnimationMixer(shark);
+          const action = mixer.clipAction(gltf.animations[0]);
+          action.play();
+          sharkData.mixer = mixer;
+          console.log('Shark animation started');
+        } else {
+          console.log('No animations found in the shark model');
+        }
+      },
+      (xhr) => {
+        console.log(`${(xhr.loaded / xhr.total * 100).toFixed(2)}% loaded`);
+      },
+      (error) => {
+        console.error('Error loading shark model:', error);
+      }
+    );
+    
+    // 2D Canvas setup (your original code)
     const canvas = canvasRef.current;
     if (!canvas) return;
     
@@ -12,6 +106,11 @@ const BackgroundCanvas = () => {
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+      
+      // Also update Three.js renderer
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
     };
     
     resizeCanvas();
@@ -51,8 +150,8 @@ const BackgroundCanvas = () => {
       });
     }
     
-    // Animation function
-    function animate() {
+    // Animation function for 2D canvas
+    function animate2D() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       // Update and draw blue particles
@@ -124,33 +223,91 @@ const BackgroundCanvas = () => {
         ctx.fill();
       }
       
-      requestAnimationFrame(animate);
+      requestAnimationFrame(animate2D);
     }
     
-    animate();
+    // Modified Animation function for Three.js shark
+    function animate3D() {
+      requestAnimationFrame(animate3D);
+      
+      // Move the shark if it exists
+      if (sharkData.object) {
+        // Update animation mixer if it exists
+        if (sharkData.mixer) {
+          sharkData.mixer.update(0.016);
+        }
+        
+        // Calculate new position
+        const newX = sharkData.object.position.x + (sharkData.speed * sharkData.direction);
+        
+        // Check boundaries and change direction instead of resetting position
+        if (newX > sharkData.bounds.max) {
+          // Change direction to left
+          sharkData.direction = -1;
+          // Flip the shark model to face left
+          sharkData.object.rotation.y = -Math.PI / 2;
+        } else if (newX < sharkData.bounds.min) {
+          // Change direction to right
+          sharkData.direction = 1;
+          // Flip the shark model to face right
+          sharkData.object.rotation.y = Math.PI / 2;
+        }
+        
+        // Update position
+        sharkData.object.position.x = newX;
+        
+        // Debug log every 3 seconds
+        if (Math.floor(Date.now() / 1000) % 3 === 0) {
+          console.log("Shark position:", sharkData.object.position.x, "Direction:", sharkData.direction);
+        }
+      }
+      
+      renderer.render(scene, camera);
+    }
+    
+    // Start both animations
+    animate2D();
+    animate3D();
     
     // Handle window resize
     window.addEventListener('resize', resizeCanvas);
     
     return () => {
       window.removeEventListener('resize', resizeCanvas);
+      if (threeContainer.contains(renderer.domElement)) {
+        threeContainer.removeChild(renderer.domElement);
+      }
     };
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        pointerEvents: 'none',
-        zIndex: 0,
-        opacity: 0.5
-      }}
-    />
+    <>
+      <div 
+        ref={threeContainerRef}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          pointerEvents: 'none',
+          zIndex: 0
+        }}
+      />
+      <canvas
+        ref={canvasRef}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          pointerEvents: 'none',
+          zIndex: 5,
+          opacity: 0.5
+        }}
+      />
+    </>
   );
 };
 
