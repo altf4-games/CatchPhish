@@ -502,10 +502,14 @@ function Dashboard() {
             {result.screenshot && (
               <div className="detail-item">
                 <strong>Screenshot:</strong>
+                {console.log("Screenshot URL:", result.screenshot)}
                 <img
-                  src={`http://127.0.0.1:5001${result.screenshot}`}
+                  src={`http://localhost:5001${result.screenshot}`}
                   alt="Website Screenshot"
-                  style={{ width: "100px" }}
+                  style={{ width: "256px" }}
+                  onError={(e) =>
+                    console.error("Image failed to load:", e.target.src)
+                  }
                 />
               </div>
             )}
@@ -673,7 +677,7 @@ function LandingPage() {
           <div className="main-logo">
             <img src="./LOGO.png" alt="CatchPhish" />
             <h1>Catch</h1>
-            <p>Phish</p>  
+            <p>Phish</p>
           </div>
           <p className="description">
             Analyze suspicious domains, IPs and URLs to detect phishing and
@@ -686,7 +690,6 @@ function LandingPage() {
           <img src="/fish.png" alt="Fish illustration" />
         </div>
       </main>
-     
     </div>
   );
 }
