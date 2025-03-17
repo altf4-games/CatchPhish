@@ -344,10 +344,10 @@ def process_phishing_report(phishing_data):
                         if key in cell.text:
                             cell.text = cell.text.replace(key, value)
         doc.save(output_path)
-        logger.info(f"Report for {domain} saved to {output_path}!")
+        # logger.info(f"Report for {domain} saved to {output_path}!")
         return phishing_details, output_path
     except Exception as e:
-        logger.error(f"Error processing phishing report: {e}")
+        # logger.error(f"Error processing phishing report: {e}")
         return None, None
 
 def send_cert_email(sender_email, sender_password, cert_in_email, report_file_path, phishing_details):
@@ -388,10 +388,10 @@ contact@catchphish.com
         server.login(sender_email, sender_password)
         server.sendmail(sender_email, cert_in_email, msg.as_string())
         server.quit()
-        logger.info(f"Phishing report for {domain} sent to CERT-In!")
+        # logger.info(f"Phishing report for {domain} sent to CERT-In!")
         return True
     except Exception as e:
-        logger.error(f"Error sending email: {e}")
+        # logger.error(f"Error sending email: {e}")
         return False
 
 @app.route('/generate-certin-report', methods=['POST'])
@@ -437,7 +437,7 @@ def generate_certin_report():
                 'message': 'Failed to process phishing report.'
             })
     except Exception as e:
-        logger.error(f"Error in generate_certin_report: {e}")
+        # logger.error(f"Error in generate_certin_report: {e}")
         return jsonify({
             'success': False,
             'message': f'Error processing request: {str(e)}'
@@ -458,7 +458,7 @@ def get_reports():
         reports = [dict(row) for row in rows]
         return jsonify({"reports": reports})
     except Exception as e:
-        logger.error(f"Error retrieving reports: {e}")
+        # logger.error(f"Error retrieving reports: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
 
