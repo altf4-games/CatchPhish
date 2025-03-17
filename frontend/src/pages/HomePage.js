@@ -111,7 +111,8 @@ const HomePage = () => {
         style={{ background: "linear-gradient(135deg, #060d40 0%, #1a2980 100%)" }}
       >
         {/* Hero Section */}
-        <div className="absolute top-0 left-0 w-full h-full opacity-20 bg-pattern-grid z-0"></div>
+        <div className="absolute top-0 left-0 w-full h-full opacity-20 bg-pattern-grid z-0">     
+        </div>
         <LandingPage />
         
         {/* How It Works */}
@@ -477,38 +478,7 @@ const HomePage = () => {
       </div>
     </section>
     
-    {/* Dashboard Preview */}
-    <section className="py-16 px-4 border-t border-blue-700/40 relative z-10">
-      <div className="max-w-7xl mx-auto">
-        <div 
-          className="text-center mb-16"
-          style={{
-            opacity: Math.min(1, (scrollY - 1350) / 300),
-            transform: `translateY(${Math.max(0, 50 - (scrollY - 1350) / 5)}px)`,
-            transition: "opacity 0.5s ease, transform 0.5s ease"
-          }}
-        >
-          <h2 className="text-4xl font-bold text-white mb-4 tracking-tight glow-text" style={{ textShadow: "0 0 15px rgba(100, 150, 255, 0.7)" }}>
-            Powerful Dashboard
-          </h2>
-          <p className="text-lg text-blue-100 max-w-3xl mx-auto leading-relaxed">
-            Get instant visibility into threats with our intuitive dashboard
-          </p>
-        </div>
-        
-        <div 
-          className="relative rounded-xl overflow-hidden shadow-2xl border border-blue-500/40"
-          style={{
-            opacity: Math.min(1, (scrollY - 1400) / 300),
-            transform: `translateY(${Math.max(0, 50 - (scrollY - 1400) / 5)}px)`,
-            transition: "all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)"
-          }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-transparent to-indigo-500/20"></div>
-          <Dashboard />
-        </div>
-      </div>
-    </section>
+   
     
     {/* CTA Section */}
     <section className="py-16 px-4 relative z-10">
