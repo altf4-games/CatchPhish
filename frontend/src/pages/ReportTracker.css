@@ -1,0 +1,143 @@
+/* Add these styles to your global CSS or as a separate stylesheet */
+
+/* Background animations */
+@keyframes dataFlow {
+    0% {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+    10% {
+      opacity: 0.8;
+    }
+    90% {
+      opacity: 0.8;
+    }
+    100% {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+  }
+  
+  /* Glowing effect for key elements */
+  .glow-effect {
+    box-shadow: 0 0 5px rgba(0, 195, 255, 0.5),
+                0 0 10px rgba(0, 195, 255, 0.3),
+                0 0 15px rgba(0, 195, 255, 0.1);
+    animation: glow 2s infinite alternate;
+  }
+  
+  @keyframes glow {
+    from {
+      box-shadow: 0 0 5px rgba(0, 195, 255, 0.5),
+                  0 0 10px rgba(0, 195, 255, 0.3),
+                  0 0 15px rgba(0, 195, 255, 0.1);
+    }
+    to {
+      box-shadow: 0 0 10px rgba(0, 195, 255, 0.7),
+                  0 0 20px rgba(0, 195, 255, 0.5),
+                  0 0 30px rgba(0, 195, 255, 0.3);
+    }
+  }
+  
+  /* Scanning line effect */
+  .scan-line {
+    position: absolute;
+    height: 2px;
+    width: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.8), transparent);
+    animation: scan 3s infinite;
+  }
+  
+  @keyframes scan {
+    0% {
+      top: 0%;
+      opacity: 0;
+    }
+    5% {
+      opacity: 0.8;
+    }
+    95% {
+      opacity: 0.8;
+    }
+    100% {
+      top: 100%;
+      opacity: 0;
+    }
+  }
+  
+  /* Digital noise effect */
+  .digital-noise {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.02;
+    pointer-events: none;
+  }
+  
+  /* Futuristic button effects */
+  .tech-button {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .tech-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: 0.5s;
+  }
+  
+  .tech-button:hover::before {
+    left: 100%;
+  }
+  
+  /* Status indicator blinking effect */
+  .status-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #00ff4c;
+    box-shadow: 0 0 5px #00ff4c;
+    animation: blink 1.5s infinite;
+  }
+  
+  .status-indicator.warning {
+    background-color: #ffcc00;
+    box-shadow: 0 0 5px #ffcc00;
+  }
+  
+  .status-indicator.danger {
+    background-color: #ff3333;
+    box-shadow: 0 0 5px #ff3333;
+  }
+  
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  
+  /* Terminal text effect */
+  .terminal-text {
+    font-family: "Courier New", monospace;
+    color: #00ff9d;
+    text-shadow: 0 0 5px rgba(0, 255, 157, 0.5);
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .cyber-grid {
+      background-size: 15px 15px;
+    }
+    
+    .terminal-text {
+      font-size: 0.875rem;
+    }
+  }

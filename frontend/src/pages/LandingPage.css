@@ -108,6 +108,8 @@
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
+display: block !important;
+  clear: both !important;
 }
 
 /* Analysis container */
@@ -342,6 +344,7 @@
   width: 100%;
   box-sizing: border-box;
   color: #e0e0e0;
+  margin-top: 20px;
 }
 
 .result-container:hover {

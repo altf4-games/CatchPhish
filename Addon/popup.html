@@ -1,216 +1,442 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <title>CatchPhish Protector</title>
-  <meta charset="utf-8">
-  <style>
-    body {
-      width: 320px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 0;
-      color: #333;
-    }
-    
-    .header {
-      background-color: #246AB3;
-      color: white;
-      padding: 15px;
-      text-align: center;
-      border-bottom: 4px solid #1c5490;
-    }
-    
-    .header h1 {
-      margin: 0;
-      font-size: 18px;
-      font-weight: 500;
-    }
-    
-    .logo {
-      height: 40px;
-      display: block;
-      margin: 0 auto 10px;
-    }
-    
-    .content {
-      padding: 15px;
-    }
-    
-    .status {
-      text-align: center;
-      margin-bottom: 15px;
-      padding: 10px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .status-icon {
-      margin-right: 10px;
-      font-size: 20px;
-    }
-    
-    .status-safe {
-      background-color: #e8f5e9;
-      color: #2e7d32;
-    }
-    
-    .status-warning {
-      background-color: #fff8e1;
-      color: #ff8f00;
-    }
-    
-    .status-danger {
-      background-color: #ffebee;
-      color: #c62828;
-    }
-    
-    .status-unknown {
-      background-color: #f5f5f5;
-      color: #616161;
-    }
-    
-    .button {
-      display: block;
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-      border: none;
-      border-radius: 4px;
-      background-color: #246AB3;
-      color: white;
-      cursor: pointer;
-      font-size: 14px;
-      text-align: center;
-    }
-    
-    .button:hover {
-      background-color: #1c5490;
-    }
-    
-    .button-secondary {
-      background-color: #f5f5f5;
-      color: #333;
-      border: 1px solid #ddd;
-    }
-    
-    .button-secondary:hover {
-      background-color: #e0e0e0;
-    }
-    
-    .button-danger {
-      background-color: #c62828;
-    }
-    
-    .button-danger:hover {
-      background-color: #b71c1c;
-    }
-    
-    .blocklist {
-      margin-top: 15px;
-      border-top: 1px solid #ddd;
-      padding-top: 15px;
-    }
-    
-    .blocklist h2 {
-      font-size: 14px;
-      margin-top: 0;
-      margin-bottom: 10px;
-    }
-    
-    .blocked-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px;
-      background-color: #f5f5f5;
-      margin-bottom: 5px;
-      border-radius: 4px;
-      font-size: 12px;
-    }
-    
-    .remove-btn {
-      background-color: #ff5252;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      padding: 2px 6px;
-      cursor: pointer;
-      font-size: 10px;
-    }
-    
-    .no-blocked {
-      font-style: italic;
-      color: #757575;
-      text-align: center;
-      margin: 10px 0;
-      font-size: 12px;
-    }
-    
-    .stats {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 15px;
-      border-top: 1px solid #ddd;
-      padding-top: 15px;
-    }
-    
-    .stat-box {
-      text-align: center;
-      width: 30%;
-    }
-    
-    .stat-number {
-      font-size: 20px;
-      font-weight: bold;
-      color: #246AB3;
-    }
-    
-    .stat-label {
-      font-size: 10px;
-      color: #757575;
-    }
-  </style>
-</head>
-<body>
-  <div class="header">
-    <img src="images/icon128.png" class="logo" alt="CatchPhish Logo">
-    <h1>CatchPhish Protector</h1>
-  </div>
-  
-  <div class="content">
-    <div id="currentStatus" class="status status-unknown">
-      <span class="status-icon">?</span>
-      <span>Checking current page...</span>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>CatchPhish Protector</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      /* Global resets and typography */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        width: 320px;
+        background-color: #0f1520;
+        color: #fff;
+        line-height: 1.5;
+        font-size: 14px;
+      }
+
+      /* Header styling - enhanced with gradient and shadow */
+      .header {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 18px 15px;
+        background: linear-gradient(to right, #0a101a, #131c2e);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .header h1 {
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        margin-left: 20px; /* Make room for logo */
+      }
+
+      .logo {
+        position: absolute;
+        left: 15px;
+        height: 28px;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        transition: transform 0.2s ease;
+      }
+
+      .logo:hover {
+        transform: scale(1.05);
+      }
+
+      /* Main content area */
+      .content {
+        padding: 20px 15px;
+      }
+
+      /* Status box styling - improved with animations and icons */
+      .status {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 14px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
+        font-weight: 500;
+      }
+
+      .status span.status-icon {
+        font-size: 22px;
+        margin-right: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .status-safe {
+        background-color: rgba(46, 125, 50, 0.15);
+        color: #4caf50;
+        border-left: 4px solid #2e7d32;
+      }
+
+      .status-warning {
+        background-color: rgba(255, 143, 0, 0.15);
+        color: #ffc107;
+        border-left: 4px solid #ff8f00;
+      }
+
+      .status-danger {
+        background-color: rgba(198, 40, 40, 0.15);
+        color: #f44336;
+        border-left: 4px solid #c62828;
+      }
+
+      .status-unknown {
+        background-color: rgba(97, 97, 97, 0.15);
+        color: #bdbdbd;
+        border-left: 4px solid #616161;
+      }
+
+      /* Button styling - enhanced with hover effects and transitions */
+      .button {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 12px;
+        border: none;
+        border-radius: 6px;
+        background-color: #004890;
+        color: #fff;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        text-align: center;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .button:hover {
+        background-color: #1c5490;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      }
+
+      .button:active {
+        transform: translateY(1px);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      }
+
+      .button::before {
+        content: "";
+        margin-right: 8px;
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        background-size: contain;
+        background-repeat: no-repeat;
+      }
+
+      #scanButton::before {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E");
+      }
+
+      #reportButton::before {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23333' viewBox='0 0 24 24'%3E%3Cpath d='M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z'/%3E%3C/svg%3E");
+      }
+
+      /* New styles for the scan container and download button */
+      .scan-container {
+        display: flex;
+        align-items: center;
+      }
+      .button-download {
+        display: none;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        margin-left: 10px;
+        border: none;
+        border-radius: 6px;
+        background-color: #004890;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 24 24'%3E%3Cpath d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 20px 20px;
+        cursor: pointer;
+      }
+      .button-download:hover {
+        background-color: #1c5490;
+      }
+
+      /* Stats section - improved with card-like style */
+      .stats {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 8px;
+        background-color: rgba(255, 255, 255, 0.05);
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+      }
+
+      .stat-box {
+        text-align: center;
+        width: 33%;
+        padding: 10px 0;
+        position: relative;
+      }
+
+      .stat-box:not(:last-child)::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 20%;
+        height: 60%;
+        width: 1px;
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .stat-number {
+        font-size: 22px;
+        font-weight: bold;
+        color: #3f8cdc;
+        margin-bottom: 5px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+      }
+
+      .stat-label {
+        font-size: 10px;
+        color: #9e9e9e;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* Blocklist styling - modernized with animation and better spacing */
+      .blocklist {
+        margin-top: 20px;
+        padding-top: 15px;
+      }
+
+      .blocklist h2 {
+        font-size: 15px;
+        margin-bottom: 12px;
+        color: #e0e0e0;
+        display: flex;
+        align-items: center;
+      }
+
+      .blocklist h2::before {
+        content: "";
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        margin-right: 8px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23e0e0e0' viewBox='0 0 24 24'%3E%3Cpath d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z'/%3E%3C/svg%3E");
+        background-size: contain;
+        background-repeat: no-repeat;
+      }
+
+      .blocked-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 12px;
+        background-color: rgba(245, 245, 245, 0.1);
+        margin-bottom: 8px;
+        border-radius: 6px;
+        font-size: 13px;
+        color: #e0e0e0;
+        transition: all 0.2s ease;
+        border-left: 3px solid #f44336;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        word-break: break-all;
+      }
+
+      .blocked-item:hover {
+        background-color: rgba(245, 245, 245, 0.15);
+        transform: translateX(2px);
+      }
+
+      .remove-btn {
+        background-color: #ff5252;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 4px 8px;
+        cursor: pointer;
+        font-size: 11px;
+        margin-left: 8px;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+      }
+
+      .remove-btn:hover {
+        background-color: #ff1744;
+      }
+
+      .no-blocked {
+        font-style: italic;
+        color: #9e9e9e;
+        text-align: center;
+        margin: 15px 0;
+        font-size: 13px;
+        padding: 15px;
+        border-radius: 6px;
+        background-color: rgba(255, 255, 255, 0.03);
+      }
+
+      /* Add loading animation for scanning effect */
+      @keyframes scanning {
+        0% {
+          transform: translateX(-100%);
+        }
+        100% {
+          transform: translateX(100%);
+        }
+      }
+
+      .scanning::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(
+          to right,
+          transparent,
+          #3f8cdc,
+          transparent
+        );
+        animation: scanning 1.5s infinite;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <img src="images/logo.png" class="logo" alt="CatchPhish Logo" />
+      <h1>CatchPhish Defender</h1>
     </div>
-    
-    <button id="scanButton" class="button">Scan Current Page</button>
-    <button id="reportButton" class="button button-secondary">Report Phishing Site</button>
-    
-    <div class="stats">
-      <div class="stat-box">
-        <div id="sitesScanned" class="stat-number">0</div>
-        <div class="stat-label">SITES SCANNED</div>
+    <div class="content">
+      <div id="currentStatus" class="status status-unknown">
+        <span class="status-icon">?</span>
+        <span>Checking current page...</span>
       </div>
-      <div class="stat-box">
-        <div id="sitesBlocked" class="stat-number">0</div>
-        <div class="stat-label">SITES BLOCKED</div>
+
+      <div class="scan-container">
+        <button id="scanButton" class="button">Scan Current Page</button>
+        <button
+          id="downloadButton"
+          class="button-download"
+          title="Download Report"
+        ></button>
       </div>
-      <div class="stat-box">
-        <div id="riskScore" class="stat-number">0%</div>
-        <div class="stat-label">LAST RISK SCORE</div>
+      <button id="reportButton" class="button button-secondary">
+        Report Phishing Site
+      </button>
+
+      <div class="stats">
+        <div class="stat-box">
+          <div id="sitesScanned" class="stat-number">0</div>
+          <div class="stat-label">SITES SCANNED</div>
+        </div>
+        <div class="stat-box">
+          <div id="sitesBlocked" class="stat-number">0</div>
+          <div class="stat-label">SITES BLOCKED</div>
+        </div>
+        <div class="stat-box">
+          <div id="riskScore" class="stat-number">0%</div>
+          <div class="stat-label">RISK SCORE</div>
+        </div>
+      </div>
+
+      <div class="blocklist">
+        <h2>Blocked Phishing Sites</h2>
+        <div id="blockedList">
+          <div class="no-blocked">No sites have been blocked yet</div>
+          <!-- Example of a blocked item for reference -->
+          <!-- <div class="blocked-item">
+            <span>fake-login.example.com</span>
+            <button class="remove-btn">Remove</button>
+          </div> -->
+        </div>
       </div>
     </div>
-    
-    <div class="blocklist">
-      <h2>Blocked Phishing Sites</h2>
-      <div id="blockedList">
-        <div class="no-blocked">No sites have been blocked yet</div>
-      </div>
-    </div>
-  </div>
-  
-  <script src="popup.js"></script>
-</body>
+
+    <script>
+      // Simple functionality to demonstrate UI
+      document
+        .getElementById("scanButton")
+        .addEventListener("click", function () {
+          this.classList.add("scanning");
+          document.getElementById("currentStatus").innerHTML =
+            '<span class="status-icon">⟳</span><span>Scanning current page...</span>';
+
+          // Simulate scan completion after 2 seconds
+          setTimeout(() => {
+            this.classList.remove("scanning");
+
+            // Randomly choose a status for demo purposes
+            const statuses = ["safe", "warning", "danger"];
+            const randomStatus =
+              statuses[Math.floor(Math.random() * statuses.length)];
+
+            const statusText = {
+              safe: '<span class="status-icon">✓</span><span>This site is safe</span>',
+              warning:
+                '<span class="status-icon">!</span><span>Potential phishing detected</span>',
+              danger:
+                '<span class="status-icon">✗</span><span>This site is dangerous</span>',
+            };
+
+            document.getElementById("currentStatus").innerHTML =
+              statusText[randomStatus];
+
+            // Show download button when scan is complete
+            document.getElementById("downloadButton").style.display =
+              "inline-block";
+          }, 2000);
+        });
+
+      // Download report functionality
+      document
+        .getElementById("downloadButton")
+        .addEventListener("click", function () {
+          // Replace the URL with your backend report endpoint
+          const reportUrl = "https://your-backend-endpoint.com/api/getReport";
+          fetch(reportUrl)
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return response.blob();
+            })
+            .then((blob) => {
+              const downloadUrl = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = downloadUrl;
+              a.download = "report.html"; // Adjust filename as needed
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+              URL.revokeObjectURL(downloadUrl);
+            })
+            .catch((error) => {
+              console.error("Error downloading report:", error);
+            });
+        });
+    </script>
+    <script src="popup.js"></script>
+  </body>
 </html>

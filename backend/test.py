@@ -859,6 +859,11 @@ def fuzzy_search():
         print(f"Error in fuzzy search: {e}")
         return jsonify({"error": "Internal server error"}), 500
     
+from logo import phishing_api
+
+# Register the phishing detection blueprint
+app.register_blueprint(phishing_api, url_prefix='/api/phishing')
+    
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
 
