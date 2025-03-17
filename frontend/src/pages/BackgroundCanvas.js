@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 
 const BackgroundCanvas = () => {
   const canvasRef = useRef(null);
-
+  
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -13,22 +13,40 @@ const BackgroundCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
-
+    
     resizeCanvas();
-
+    
     // Set up particles for network visualization with improved colors
     const particles = [];
-    const particleCount = 100;
+    const particleCount = 180; // Increased from 100 to 180
     const connectionDistance = 150;
     
-    // Create particles with more vibrant colors
+    // Yellow light particles (small amount)
+    const yellowLights = [];
+    const yellowLightCount = 12; // Small amount of yellow lights
+    
+    // Create yellow light particles
+    for (let i = 0; i < yellowLightCount; i++) {
+      yellowLights.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 3 + 2, // Slightly larger
+        speedX: (Math.random() - 0.5) * 1.5,
+        speedY: (Math.random() - 0.5) * 1.5,
+        // Yellow colors with varying opacity
+        color: `rgba(255, ${Math.random() * 50 + 200}, 0, ${Math.random() * 0.3 + 0.4})`
+      });
+    }
+    
+    // Create particles with more vibrant colors and increased speed
     for (let i = 0; i < particleCount; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
         size: Math.random() * 2 + 1,
-        speedX: (Math.random() - 0.5) * 0.5,
-        speedY: (Math.random() - 0.5) * 0.5,
+        // Increased speed range by multiplying by 2
+        speedX: (Math.random() - 0.5) * 2,
+        speedY: (Math.random() - 0.5) * 2,
         color: `rgba(${Math.random() * 100 + 155}, ${Math.random() * 50 + 50}, 255, ${Math.random() * 0.5 + 0.3})`
       });
     }
@@ -37,7 +55,7 @@ const BackgroundCanvas = () => {
     function animate() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      // Update and draw particles
+      // Update and draw blue particles
       for (let i = 0; i < particles.length; i++) {
         let p = particles[i];
         
@@ -62,13 +80,48 @@ const BackgroundCanvas = () => {
           
           if (distance < connectionDistance) {
             ctx.beginPath();
-            ctx.strokeStyle = `rgba(120, 180, 255, ${(1 - distance/connectionDistance) * 0.3})`;
+            // Brighter connections
+            ctx.strokeStyle = `rgba(120, 180, 255, ${(1 - distance/connectionDistance) * 0.5})`;
             ctx.lineWidth = 1;
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
             ctx.stroke();
           }
         }
+      }
+      
+      // Draw and update yellow lights
+      for (let i = 0; i < yellowLights.length; i++) {
+        let light = yellowLights[i];
+        
+        // Update position
+        light.x += light.speedX;
+        light.y += light.speedY;
+        
+        // Bounce off edges
+        if (light.x < 0 || light.x > canvas.width) light.speedX *= -1;
+        if (light.y < 0 || light.y > canvas.height) light.speedY *= -1;
+        
+        // Draw yellow light with glow effect
+        ctx.beginPath();
+        
+        // Create gradient for glow effect
+        const gradient = ctx.createRadialGradient(
+          light.x, light.y, 0,
+          light.x, light.y, light.size * 3
+        );
+        gradient.addColorStop(0, light.color);
+        gradient.addColorStop(1, 'rgba(255, 255, 0, 0)');
+        
+        ctx.fillStyle = gradient;
+        ctx.arc(light.x, light.y, light.size * 3, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw core of light
+        ctx.beginPath();
+        ctx.arc(light.x, light.y, light.size, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 150, 0.8)';
+        ctx.fill();
       }
       
       requestAnimationFrame(animate);
