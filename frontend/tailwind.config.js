@@ -2,9 +2,16 @@
 module.exports = {
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
+    "./public/index.html"
   ],
   theme: {
     extend: {
+      colors: {
+        primary: "#0a1a4b",
+        secondary: "#304ffe",
+        accent: "#fdbc40",
+        // Add other custom colors you're using
+      },
       animation: {
         'float': 'float 6s ease-in-out infinite',
         'float-delay': 'float 8s ease-in-out 1s infinite',

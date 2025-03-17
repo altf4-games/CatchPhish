@@ -9,6 +9,8 @@ import Services from "./pages/services";
 import Home from "./pages/LandingPage";
 import Resources from "./pages/resources";
 import Navbar from "./pages/Navbar";// You'll need to create this component
+import ReportTracker from "./pages/ReportTracker";
+import HomePage from "./pages/HomePage";
 
 // Layout component that includes the navbar
 const Layout = () => {
@@ -22,7 +24,6 @@ const Layout = () => {
   );
 };
 
-import ReportTracker from "./pages/ReportTracker";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
         
         {/* Routes with navbar */}
         <Route element={<Layout />}>
@@ -40,6 +42,8 @@ function App() {
           <Route path="/about" element={<AboutUs />} />
           <Route path="/services" element={<Services />} />
           <Route path="/resources" element={<Resources />} />
+          <Route path="/HomePage" element={<HomePage />} />
+
         </Route>
         
         {/* Catch all unmatched routes and redirect to login */}
