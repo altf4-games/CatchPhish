@@ -1,9 +1,9 @@
 "use client";
-
+import InsightsAnalytics from './insight';
 import { useState, useEffect } from "react";
 import "./dashboard.css";
 
-// StatsCards Component with improved visualization
+// StatsCards Component
 function StatsCards({ stats }) {
   return (
     <div className="stats-container">
@@ -20,13 +20,13 @@ function StatsCards({ stats }) {
   );
 }
 
-// Sidebar Component with improved navigation
-function Sidebar() {
+// Sidebar Component – now accepts activeSection and setActiveSection as props
+function Sidebar({ activeSection, setActiveSection }) {
   const menuItems = [
-    { icon: "📊", label: "Dashboard", active: true },
-    { icon: "🎯", label: "Takedown Tracker", hasSubmenu: true },
-    { icon: "📈", label: "Insights & Analytics", hasSubmenu: true },
-    { icon: "⚙️", label: "Settings", hasSubmenu: true },
+    { icon: "📊", label: "Dashboard", id: "dashboard" },
+    { icon: "🎯", label: "Takedown Tracker", id: "takedown" },
+    { icon: "📈", label: "Insights & Analytics", id: "insights" },
+    { icon: "⚙", label: "Settings", id: "settings" },
   ];
 
   return (
@@ -39,13 +39,15 @@ function Sidebar() {
           Dashboard <span className="version">v1.0</span>
         </h2>
       </div>
-
       <nav className="sidebar-nav">
         {menuItems.map((item, index) => (
-          <div key={index} className={`nav-item ${item.active ? "active" : ""}`}>
+          <div 
+            key={index} 
+            className={`nav-item ${activeSection === item.id ? "active" : ""}`}
+            onClick={() => setActiveSection(item.id)}
+          >
             <span className="nav-icon">{item.icon}</span>
             <span className="nav-label">{item.label}</span>
-            {item.hasSubmenu && <span className="submenu-arrow">›</span>}
           </div>
         ))}
       </nav>
@@ -53,7 +55,7 @@ function Sidebar() {
   );
 }
 
-// SitesTable Component with enhanced UI
+// SitesTable Component
 function SitesTable({ data }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("newest");
@@ -65,29 +67,21 @@ function SitesTable({ data }) {
   );
 
   const sortedData = [...(filteredData || [])].sort((a, b) => {
-    // Handle both date and dateSubmitted field names
     const dateA = new Date(a.date || a.dateSubmitted || 0);
     const dateB = new Date(b.date || b.dateSubmitted || 0);
-    
-    if (sortBy === "newest") {
-      return dateB - dateA;
-    }
-    return dateA - dateB;
+    return sortBy === "newest" ? dateB - dateA : dateA - dateB;
   });
 
   const pageCount = Math.ceil(sortedData.length / itemsPerPage);
   const currentData = sortedData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  // Handle pagination
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= pageCount) {
       setCurrentPage(newPage);
-      // Scroll to top of table on page change
       document.querySelector('.table-header')?.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
-  // Helper function to get badge class based on status
   const getBadgeClass = (status) => {
     switch(status?.toLowerCase()) {
       case 'phishing':
@@ -99,7 +93,6 @@ function SitesTable({ data }) {
     }
   };
 
-  // Format date to be more readable
   const formatDate = (dateString) => {
     try {
       const date = new Date(dateString);
@@ -154,7 +147,7 @@ function SitesTable({ data }) {
                   <td>{formatDate(item.date || item.dateSubmitted)}</td>
                   <td>
                     <span className={`status-badge ${getBadgeClass(item.status)}`}>
-                      {item.status?.charAt(0).toUpperCase() + item.status?.slice(1) || 'Unknown'}
+                      {item.status ? item.status.charAt(0).toUpperCase() + item.status.slice(1) : 'Unknown'}
                     </span>
                   </td>
                 </tr>
@@ -188,106 +181,124 @@ function SitesTable({ data }) {
   );
 }
 
-// Main Dashboard Component with enhanced UI and animations
+// Main Dashboard Component
 function Dashboard() {
   const [username, setUsername] = useState("");
   const [userData, setUserData] = useState([]);
-  const [stats, setStats] = useState([
-    { title: "Total Sites", value: 0, icon: "🔍" },
-    { title: "Phishing", value: 0, icon: "⚠️" },
-    { title: "Safe", value: 0, icon: "✅" },
-    { title: "Pending", value: 0, icon: "⏳" }
-  ]);
+  const [stats, setStats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeSection, setActiveSection] = useState("dashboard");
 
   useEffect(() => {
     setLoading(true);
-    
-    // First, check if the session is valid
+    // Check session then get user data
     fetch("http://localhost:5000/api/users/check-session", {
       method: "GET",
       credentials: "include",
     })
-    .then(response => response.json())
-    .then(sessionData => {
-      console.log("Session check:", sessionData);
-      
-      if (!sessionData.authenticated) {
-        // Redirect to login if not authenticated
-        window.location.href = "/login";
-        throw new Error("Not authenticated");
-      }
-      
-      // If authenticated, get user data
-      return fetch("http://localhost:5000/api/users/me", {
-        method: "GET",
-        credentials: "include",
+      .then(response => response.json())
+      .then(sessionData => {
+        console.log("Session check:", sessionData);
+        if (!sessionData.authenticated) {
+          window.location.href = "/login";
+          throw new Error("Not authenticated");
+        }
+        return fetch("http://localhost:5000/api/users/me", {
+          method: "GET",
+          credentials: "include",
+        });
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Authentication error: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(userData => {
+        console.log("User data:", userData);
+        setUsername(userData.username);
+        return fetch("http://localhost:5000/api/reports/user", {
+          method: "GET",
+          credentials: "include",
+        });
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Failed to fetch site data: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(siteData => {
+        console.log("Site data:", siteData);
+        if (!Array.isArray(siteData)) {
+          console.error("Site data is not an array:", siteData);
+          siteData = [];
+        }
+        setUserData(siteData);
+        const totalSites = siteData.length;
+        const phishingSites = siteData.filter(site => site.status === "phishing").length;
+        const safeSites = siteData.filter(site => site.status === "safe").length;
+        const pendingSites = siteData.filter(site => 
+          site.status !== "phishing" && site.status !== "safe"
+        ).length;
+        setStats([
+          { title: "Total Sites", value: totalSites, icon: "🔍" },
+          { title: "Phishing", value: phishingSites, icon: "⚠" },
+          { title: "Safe", value: safeSites, icon: "✅" },
+          { title: "Pending", value: pendingSites, icon: "⏳" }
+        ]);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error("Error fetching data:", error);
+        if (error.message !== "Not authenticated") {
+          setError(error.message);
+        }
+        setLoading(false);
       });
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`Authentication error: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(userData => {
-      console.log("User data:", userData);
-      setUsername(userData.username);
-      
-      // Fetch ALL sites
-      return fetch("http://localhost:5000/api/reports/user", {
-        method: "GET",
-        credentials: "include",
-      });
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`Failed to fetch site data: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(siteData => {
-      console.log("Site data:", siteData);
-      
-      // Check if siteData is an array
-      if (!Array.isArray(siteData)) {
-        console.error("Site data is not an array:", siteData);
-        siteData = [];
-      }
-      
-      setUserData(siteData);
-      
-      // Update stats with counts and icons
-      const totalSites = siteData.length;
-      const phishingSites = siteData.filter(site => site.status === "phishing").length;
-      const safeSites = siteData.filter(site => site.status === "safe").length;
-      const pendingSites = siteData.filter(site => 
-        site.status !== "phishing" && site.status !== "safe"
-      ).length;
-      
-      setStats([
-        { title: "Total Sites", value: totalSites, icon: "🔍" },
-        { title: "Phishing", value: phishingSites, icon: "⚠️" },
-        { title: "Safe", value: safeSites, icon: "✅" },
-        { title: "Pending", value: pendingSites, icon: "⏳" }
-      ]);
-      
-      setLoading(false);
-    })
-    .catch(error => {
-      console.error("Error fetching data:", error);
-      if (error.message !== "Not authenticated") {
-        setError(error.message);
-      }
-      setLoading(false);
-    });
   }, []);
+
+  // Render the appropriate section based on activeSection state
+  const renderSection = () => {
+    switch (activeSection) {
+      case 'dashboard':
+        return (
+          <div className="p-6">
+            <h1 className="text-2xl font-bold mb-6">Welcome, {username}</h1>
+            <StatsCards stats={stats} />
+            <SitesTable data={userData} />
+          </div>
+        );
+      case 'takedown':
+        return (
+          <div className="p-6">
+            <h1 className="text-2xl font-bold mb-6">Takedown Tracker</h1>
+            {/* Insert your takedown tracker content here */}
+          </div>
+        );
+      case 'insights':
+        return <InsightsAnalytics />;
+      case 'settings':
+        return (
+          <div className="p-6">
+            <h1 className="text-2xl font-bold mb-6">Settings</h1>
+            {/* Insert your settings content here */}
+          </div>
+        );
+      default:
+        return (
+          <div className="p-6">
+            <h1 className="text-2xl font-bold mb-6">Page not found</h1>
+          </div>
+        );
+    }
+  };
 
   if (error) {
     return (
       <div className="dashboard">
-        <Sidebar />
+        <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
         <div className="dashboard-content">
           <div className="error-container">
             <h2>Error loading dashboard</h2>
@@ -313,22 +324,25 @@ function Dashboard() {
     );
   }
 
-  return (
-    <div className="dashboard">
-      <Sidebar />
-      <div className="dashboard-content">
-        {loading ? (
+  if (loading) {
+    return (
+      <div className="dashboard">
+        <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
+        <div className="dashboard-content">
           <div className="loading">
             <div className="loading-spinner"></div>
             <p>Loading dashboard data...</p>
           </div>
-        ) : (
-          <>
-            <h1>Welcome, {username || "User"}<span>👋</span></h1>
-            <StatsCards stats={stats} />
-            <SitesTable data={userData} />
-          </>
-        )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="dashboard flex h-screen bg-gray-900 text-white">
+      <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
+      <div className="dashboard-content flex-1 overflow-y-auto">
+        {renderSection()}
       </div>
     </div>
   );
