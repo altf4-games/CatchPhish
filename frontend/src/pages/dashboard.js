@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import "./HomePage.js"; // Add proper extension
 import ReportTracker from "./ReportTracker";
 import InsightsAnalytics from "./insight";
+import MonitorDomain from "./Monitor.js";
 
 function Dashboard() {
   const [username, setUsername] = useState("");
@@ -74,10 +75,30 @@ function Dashboard() {
           (site) => site.status !== "phishing" && site.status !== "safe"
         ).length;
         setStats([
-          { title: "Total Sites", value: totalSites, icon: "🔍", color: "from-blue-500 to-blue-700" },
-          { title: "Phishing", value: phishingSites, icon: "⚠️", color: "from-red-500 to-red-700" },
-          { title: "Safe", value: safeSites, icon: "✅", color: "from-green-500 to-green-700" },
-          { title: "Pending", value: pendingSites, icon: "⏳", color: "from-yellow-500 to-yellow-700" },
+          {
+            title: "Total Sites",
+            value: totalSites,
+            icon: "🔍",
+            color: "from-blue-500 to-blue-700",
+          },
+          {
+            title: "Phishing",
+            value: phishingSites,
+            icon: "⚠️",
+            color: "from-red-500 to-red-700",
+          },
+          {
+            title: "Safe",
+            value: safeSites,
+            icon: "✅",
+            color: "from-green-500 to-green-700",
+          },
+          {
+            title: "Pending",
+            value: pendingSites,
+            icon: "⏳",
+            color: "from-yellow-500 to-yellow-700",
+          },
         ]);
         setLoading(false);
       })
@@ -147,6 +168,7 @@ function Dashboard() {
     { icon: "📊", label: "Dashboard", id: "dashboard" },
     { icon: "🎯", label: "Takedown Tracker", id: "takedown" },
     { icon: "📈", label: "Insights & Analytics", id: "insights" },
+    { icon: "📊", label: "Monitor", id: "monitor" },
     { icon: "⚙️", label: "Settings", id: "settings" },
   ];
 
@@ -159,7 +181,7 @@ function Dashboard() {
             <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
               Welcome, {username} <span className="animate-wave">👋</span>
             </h1>
-            
+
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               {stats.map((stat, index) => (
@@ -167,16 +189,20 @@ function Dashboard() {
                   key={index}
                   className="bg-slate-800/50 backdrop-blur rounded-xl p-6 border border-blue-900/30 transition-all duration-300 hover:-translate-y-2 hover:shadow-lg relative overflow-hidden group"
                 >
-                  <div className={`absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r animate-pulse ${stat.color}`}></div>
+                  <div
+                    className={`absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r animate-pulse ${stat.color}`}
+                  ></div>
                   <h3 className="text-lg text-white/75 mb-3 flex justify-between items-center font-medium">
                     {stat.title}
                     <span className="text-xl">{stat.icon}</span>
                   </h3>
-                  <p className="text-4xl font-bold transition-transform duration-200 group-hover:scale-105">{stat.value}</p>
+                  <p className="text-4xl font-bold transition-transform duration-200 group-hover:scale-105">
+                    {stat.value}
+                  </p>
                 </div>
               ))}
             </div>
-            
+
             {/* Sites Table */}
             <div className="bg-slate-800/40 backdrop-blur rounded-xl border border-blue-900/30 overflow-hidden shadow-lg transition-transform duration-300 hover:-translate-y-1">
               <div className="flex justify-between items-center p-6 border-b border-blue-900/25 table-header">
@@ -189,8 +215,8 @@ function Dashboard() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="px-4 py-2 rounded-lg bg-slate-900/65 border border-blue-900/40 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 outline-none transition-all duration-200"
                   />
-                  <select 
-                    value={sortBy} 
+                  <select
+                    value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
                     className="px-4 py-2 rounded-lg bg-slate-900/65 border border-blue-900/40 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 outline-none transition-all duration-200"
                   >
@@ -199,26 +225,43 @@ function Dashboard() {
                   </select>
                 </div>
               </div>
-              
+
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="bg-slate-900/50">
-                      <th className="text-left p-4 font-semibold text-sm uppercase tracking-wide text-white/80">URL / Domain</th>
-                      <th className="text-left p-4 font-semibold text-sm uppercase tracking-wide text-white/80">Action Taken</th>
-                      <th className="text-left p-4 font-semibold text-sm uppercase tracking-wide text-white/80">Date Submitted</th>
-                      <th className="text-left p-4 font-semibold text-sm uppercase tracking-wide text-white/80">Status</th>
+                      <th className="text-left p-4 font-semibold text-sm uppercase tracking-wide text-white/80">
+                        URL / Domain
+                      </th>
+                      <th className="text-left p-4 font-semibold text-sm uppercase tracking-wide text-white/80">
+                        Action Taken
+                      </th>
+                      <th className="text-left p-4 font-semibold text-sm uppercase tracking-wide text-white/80">
+                        Date Submitted
+                      </th>
+                      <th className="text-left p-4 font-semibold text-sm uppercase tracking-wide text-white/80">
+                        Status
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {currentData.length > 0 ? (
                       currentData.map((item, index) => (
-                        <tr key={index} className="border-b border-blue-900/15 hover:bg-blue-900/15 transition-colors duration-150">
+                        <tr
+                          key={index}
+                          className="border-b border-blue-900/15 hover:bg-blue-900/15 transition-colors duration-150"
+                        >
                           <td className="p-4">{item.url}</td>
                           <td className="p-4">{item.actionTaken}</td>
-                          <td className="p-4">{formatDate(item.date || item.dateSubmitted)}</td>
                           <td className="p-4">
-                            <span className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-semibold transition-transform duration-150 hover:scale-105 ${getBadgeClass(item.status)}`}>
+                            {formatDate(item.date || item.dateSubmitted)}
+                          </td>
+                          <td className="p-4">
+                            <span
+                              className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-semibold transition-transform duration-150 hover:scale-105 ${getBadgeClass(
+                                item.status
+                              )}`}
+                            >
                               {item.status
                                 ? item.status.charAt(0).toUpperCase() +
                                   item.status.slice(1)
@@ -229,7 +272,10 @@ function Dashboard() {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="4" className="p-8 text-center text-white/50 italic">
+                        <td
+                          colSpan="4"
+                          className="p-8 text-center text-white/50 italic"
+                        >
                           No sites found matching your criteria
                         </td>
                       </tr>
@@ -237,7 +283,7 @@ function Dashboard() {
                   </tbody>
                 </table>
               </div>
-              
+
               {pageCount > 1 && (
                 <div className="flex justify-between items-center p-5 border-t border-blue-900/20">
                   <button
@@ -263,7 +309,7 @@ function Dashboard() {
           </div>
         );
       case "takedown":
-        return <ReportTracker />;  // Use the imported component with proper JSX syntax
+        return <ReportTracker />; // Use the imported component with proper JSX syntax
       case "insights":
         // Wrap the component in error boundary to prevent crashes
         try {
@@ -274,7 +320,10 @@ function Dashboard() {
             <div className="p-6">
               <h1 className="text-2xl font-bold mb-6">Insights & Analytics</h1>
               <div className="bg-red-900/10 backdrop-blur rounded-xl border border-red-900/30 p-8 text-center">
-                <p className="text-lg text-white/70">There was an error loading the Insights component. Please check the console for details.</p>
+                <p className="text-lg text-white/70">
+                  There was an error loading the Insights component. Please
+                  check the console for details.
+                </p>
               </div>
             </div>
           );
@@ -284,7 +333,18 @@ function Dashboard() {
           <div className="p-6">
             <h1 className="text-2xl font-bold mb-6">Settings</h1>
             <div className="bg-slate-800/40 backdrop-blur rounded-xl border border-blue-900/30 p-8 text-center">
-              <p className="text-lg text-white/70">Settings functionality will be implemented here</p>
+              <p className="text-lg text-white/70">
+                Settings functionality will be implemented here
+              </p>
+            </div>
+          </div>
+        );
+      case "monitor":
+        return (
+          <div className="p-6">
+            <h1 className="text-2xl font-bold mb-6">Monitor</h1>
+            <div className="bg-slate-800/40 backdrop-blur rounded-xl border border-blue-900/30 p-8 text-center">
+              <MonitorDomain />
             </div>
           </div>
         );
@@ -293,7 +353,9 @@ function Dashboard() {
           <div className="p-6">
             <h1 className="text-2xl font-bold mb-6">Page not found</h1>
             <div className="bg-red-900/10 rounded-xl border border-red-900/30 p-8 text-center">
-              <p className="text-lg text-white/70">The requested section does not exist</p>
+              <p className="text-lg text-white/70">
+                The requested section does not exist
+              </p>
             </div>
           </div>
         );
@@ -305,34 +367,44 @@ function Dashboard() {
       <div className="flex min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white">
         <aside className="w-64 bg-slate-950/85 border-r border-blue-900/25 p-6 flex flex-col shadow-xl">
           <div className="flex items-center gap-3 pb-5 border-b border-blue-900/25 mb-6">
-            <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center font-bold shadow-lg shadow-orange-500/40">D</div>
+            <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center font-bold shadow-lg shadow-orange-500/40">
+              D
+            </div>
             <h2 className="text-xl font-semibold">
               Dashboard <span className="text-xs text-white/60 ml-1">v1.0</span>
             </h2>
           </div>
-          
+
           <nav className="flex flex-col gap-2 mt-6">
             {menuItems.map((item, index) => (
               <div
                 key={index}
                 className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all duration-200 hover:bg-blue-900/35 hover:translate-x-1 ${
-                  activeSection === item.id ? "bg-blue-900/55 text-white shadow-md shadow-blue-900/25" : "text-white/75"
+                  activeSection === item.id
+                    ? "bg-blue-900/55 text-white shadow-md shadow-blue-900/25"
+                    : "text-white/75"
                 }`}
                 onClick={() => setActiveSection(item.id)}
               >
-                <span className="w-6 h-6 flex items-center justify-center">{item.icon}</span>
+                <span className="w-6 h-6 flex items-center justify-center">
+                  {item.icon}
+                </span>
                 <span className="font-medium">{item.label}</span>
               </div>
             ))}
           </nav>
         </aside>
-        
+
         <div className="flex-1 overflow-y-auto">
           <div className="p-6">
             <div className="bg-red-900/10 backdrop-blur rounded-xl border border-red-900/30 p-8 text-center">
-              <h2 className="text-xl font-bold text-red-400 mb-4">Error loading dashboard</h2>
+              <h2 className="text-xl font-bold text-red-400 mb-4">
+                Error loading dashboard
+              </h2>
               <p className="mb-2">{error}</p>
-              <p className="mb-6">Please ensure you are logged in and try refreshing the page.</p>
+              <p className="mb-6">
+                Please ensure you are logged in and try refreshing the page.
+              </p>
               <button
                 onClick={() => window.location.reload()}
                 className="px-5 py-3 bg-red-900/20 border border-red-900/50 rounded-lg text-white font-medium transition-all duration-200 hover:bg-red-900/30"
@@ -351,28 +423,34 @@ function Dashboard() {
       <div className="flex min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white">
         <aside className="w-64 bg-slate-950/85 border-r border-blue-900/25 p-6 flex flex-col shadow-xl">
           <div className="flex items-center gap-3 pb-5 border-b border-blue-900/25 mb-6">
-            <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center font-bold shadow-lg shadow-orange-500/40">D</div>
+            <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center font-bold shadow-lg shadow-orange-500/40">
+              D
+            </div>
             <h2 className="text-xl font-semibold">
               Dashboard <span className="text-xs text-white/60 ml-1">v1.0</span>
             </h2>
           </div>
-          
+
           <nav className="flex flex-col gap-2 mt-6">
             {menuItems.map((item, index) => (
               <div
                 key={index}
                 className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all duration-200 hover:bg-blue-900/35 hover:translate-x-1 ${
-                  activeSection === item.id ? "bg-blue-900/55 text-white shadow-md shadow-blue-900/25" : "text-white/75"
+                  activeSection === item.id
+                    ? "bg-blue-900/55 text-white shadow-md shadow-blue-900/25"
+                    : "text-white/75"
                 }`}
                 onClick={() => setActiveSection(item.id)}
               >
-                <span className="w-6 h-6 flex items-center justify-center">{item.icon}</span>
+                <span className="w-6 h-6 flex items-center justify-center">
+                  {item.icon}
+                </span>
                 <span className="font-medium">{item.label}</span>
               </div>
             ))}
           </nav>
         </aside>
-        
+
         <div className="flex-1 overflow-y-auto flex items-center justify-center">
           <div className="flex flex-col items-center">
             <div className="w-12 h-12 border-4 border-blue-900/30 border-t-blue-500 rounded-full animate-spin mb-4"></div>
@@ -388,38 +466,42 @@ function Dashboard() {
       {/* Sidebar */}
       <aside className="w-64 bg-slate-950/85 border-r border-blue-900/25 p-6 flex flex-col shadow-xl">
         <div className="flex items-center gap-3 pb-5 border-b border-blue-900/25 mb-6">
-          <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center font-bold shadow-lg shadow-orange-500/40">D</div>
+          <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center font-bold shadow-lg shadow-orange-500/40">
+            D
+          </div>
           <h2 className="text-xl font-semibold">
             Dashboard <span className="text-xs text-white/60 ml-1">v1.0</span>
           </h2>
         </div>
-        
+
         <nav className="flex flex-col gap-2 mt-6">
           {menuItems.map((item, index) => (
             <div
               key={index}
               className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all duration-200 hover:bg-blue-900/35 hover:translate-x-1 ${
-                activeSection === item.id ? "bg-blue-900/55 text-white shadow-md shadow-blue-900/25" : "text-white/75"
+                activeSection === item.id
+                  ? "bg-blue-900/55 text-white shadow-md shadow-blue-900/25"
+                  : "text-white/75"
               }`}
               onClick={() => setActiveSection(item.id)}
             >
-              <span className="w-6 h-6 flex items-center justify-center">{item.icon}</span>
+              <span className="w-6 h-6 flex items-center justify-center">
+                {item.icon}
+              </span>
               <span className="font-medium">{item.label}</span>
             </div>
           ))}
         </nav>
       </aside>
-      
+
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto">
-        {renderSection()}
-      </div>
+      <div className="flex-1 overflow-y-auto">{renderSection()}</div>
     </div>
   );
 }
 
 // CSS Animations
-const style = document.createElement('style');
+const style = document.createElement("style");
 style.innerHTML = `
   @keyframes wave {
     0%, 100% { transform: rotate(0deg); }
