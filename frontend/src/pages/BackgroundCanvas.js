@@ -47,8 +47,8 @@ const BackgroundCanvas = () => {
     scene.add(sharkBox);
     
     // Updated camera position to see the scene properly
-    camera.position.set(100, 20, 100);
-    camera.lookAt(100, 0, 0);
+    camera.position.set(100, 20, 160);
+    camera.lookAt(150, 0, 0);
     
     // Shark movement variables - with increased distance and speed
     const sharkData = {
