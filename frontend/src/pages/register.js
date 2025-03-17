@@ -50,7 +50,7 @@ const Register = () => {
 
   return (
     <>
-
+      <Navbar></Navbar>
       <div className="login-container">
         <main className="main-content">
           <div className="login-card">

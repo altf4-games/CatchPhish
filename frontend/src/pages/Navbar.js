@@ -184,7 +184,7 @@ function Navbar() {
               </>
             ) : (
               <div className="auth-links">
-                <Link to="/signup" className="sign-up-btn" onClick={closeMenus}>Sign Up</Link>
+                <Link to="/register" className="sign-up-btn" onClick={closeMenus}>Sign Up</Link>
                 <Link to="/login" className="login-btn" onClick={closeMenus}>Login</Link>
               </div>
             )}

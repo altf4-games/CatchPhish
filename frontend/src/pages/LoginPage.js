@@ -36,7 +36,7 @@ const Login = () => {
 
   return (
     <> 
-  
+    <Navbar></Navbar>
     <div className="login-container">
 
 
