@@ -24,13 +24,14 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-# NEW: Import sqlite3 for database storage
 import sqlite3
+import threading
+import time
+import difflib
 
 app = Flask(__name__)
 CORS(app)
 
-# API and configuration keys
 VT_API_KEY = "3ea2281a21cf2df9edd36bd5660fa0eaac196e49397ba87d71f118d98982289e"
 WHOIS_API_HOST = "zozor54-whois-lookup-v1.p.rapidapi.com"
 WHOIS_API_KEY = "d484df19c6msh9303ca1275ac1a8p191fbcjsn68f3d3e05b82"
@@ -40,14 +41,13 @@ MODEL_PATH = "Malicious_URL_Prediction.h5"
 GEMINI_API_KEY = "AIzaSyDc4B__rW4_zlwePV5xFiaUDOCBEbHtS0s"
 OPENPHISH_FEED_URL = "https://openphish.com/feed.txt"
 
-# CERT-In report configuration
 CONFIG = {
     "template_path": "./templates/certin_form.docx",
     "output_dir": "filled_reports/",
     "processed_dir": "processed_files/",
     "watch_dir": "incoming_json/",
     "sender_email": "chiragsolanki9821@gmail.com",
-    "sender_password": "ekly segp gngi jjzw",  # Use environment variables in production
+    "sender_password": "ekly segp gngi jjzw",
     "cert_in_email": "cygnusprofile@gmail.com",
 }
 
@@ -55,15 +55,6 @@ if not os.path.exists(SCREENSHOT_DIR):
     os.makedirs(SCREENSHOT_DIR)
 for dir_path in [CONFIG["output_dir"], CONFIG["processed_dir"]]:
     os.makedirs(dir_path, exist_ok=True)
-
-# logging.basicConfig(
-#     level=logging.INFO,
-#     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-#     handlers=[logging.FileHandler("cert_reporting.log"), logging.StreamHandler()]
-# )
-# logger = logging.getLogger("cert_reporter")
-
-# NEW: SQLite database helper functions and initialization
 
 def get_db_connection():
     conn = sqlite3.connect("reports.db")
@@ -87,7 +78,6 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Initialize the database on startup
 init_db()
 
 def get_dns_records(domain):
@@ -344,10 +334,8 @@ def process_phishing_report(phishing_data):
                         if key in cell.text:
                             cell.text = cell.text.replace(key, value)
         doc.save(output_path)
-        # logger.info(f"Report for {domain} saved to {output_path}!")
         return phishing_details, output_path
     except Exception as e:
-        # logger.error(f"Error processing phishing report: {e}")
         return None, None
 
 def send_cert_email(sender_email, sender_password, cert_in_email, report_file_path, phishing_details):
@@ -388,10 +376,8 @@ contact@catchphish.com
         server.login(sender_email, sender_password)
         server.sendmail(sender_email, cert_in_email, msg.as_string())
         server.quit()
-        # logger.info(f"Phishing report for {domain} sent to CERT-In!")
         return True
     except Exception as e:
-        # logger.error(f"Error sending email: {e}")
         return False
 
 @app.route('/generate-certin-report', methods=['POST'])
@@ -399,7 +385,6 @@ def generate_certin_report():
     try:
         data = request.json
         report_data = json.loads(data['reportData'])
-        # NEW: Expect username to be provided in the payload
         username = data.get("username", "unknown_user")
         domain = report_data.get('domain', 'unknown domain')
         phishing_details, output_path = process_phishing_report(report_data)
@@ -413,7 +398,6 @@ def generate_certin_report():
                 phishing_details
             )
             if success:
-                # NEW: Store the report details in the SQLite database
                 conn = get_db_connection()
                 cursor = conn.cursor()
                 cursor.execute("""
@@ -437,13 +421,11 @@ def generate_certin_report():
                 'message': 'Failed to process phishing report.'
             })
     except Exception as e:
-        # logger.error(f"Error in generate_certin_report: {e}")
         return jsonify({
             'success': False,
             'message': f'Error processing request: {str(e)}'
         })
 
-# NEW: Endpoint to retrieve all reports for a specific user.
 @app.route('/get-reports', methods=['GET'])
 def get_reports():
     username = request.args.get("username")
@@ -458,9 +440,80 @@ def get_reports():
         reports = [dict(row) for row in rows]
         return jsonify({"reports": reports})
     except Exception as e:
-        # logger.error(f"Error retrieving reports: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
+def extract_domain(url):
+    url = url.replace("http://", "").replace("https://", "")
+    return url.split("/")[0]
+
+def is_typosquat(original, candidate):
+    if original == candidate:
+        return False
+    ratio = difflib.SequenceMatcher(None, original, candidate).ratio()
+    return 0.8 < ratio < 1.0
+
+def parse_interval(interval_str):
+    num = float(re.findall(r"[\d\.]+", interval_str)[0])
+    if "hour" in interval_str.lower():
+        return int(num * 3600)
+    if "minute" in interval_str.lower():
+        return int(num * 60)
+    return int(num)
+
+def monitor_task(original_domain, interval_seconds):
+    reported = set()
+    while True:
+        feed = fetch_openphish()
+        for url in feed:
+            if not url.strip():
+                continue
+            candidate_domain = extract_domain(url)
+            if candidate_domain and is_typosquat(original_domain, candidate_domain) and candidate_domain not in reported:
+                phishing_data = {
+                    "domain": candidate_domain,
+                    "dns_records": get_dns_records(candidate_domain),
+                    "virustotal": check_virustotal(candidate_domain),
+                    "openphish_flagged": True,
+                    "suspicious_indicators": check_suspicious_patterns(candidate_domain),
+                    "risk_score": 0,
+                    "confidence": "Unknown",
+                    "ml_prediction": get_ml_prediction(candidate_domain),
+                    "gemini_analysis": get_gemini_analysis("http://" + candidate_domain),
+                    "whois_data": get_whois_data(candidate_domain),
+                    "screenshot": capture_screenshot("http://" + candidate_domain, candidate_domain + ".png")
+                }
+                phishing_details, output_path = process_phishing_report(phishing_data)
+                if phishing_details and output_path:
+                    success = send_cert_email(
+                        CONFIG["sender_email"],
+                        CONFIG["sender_password"],
+                        CONFIG["cert_in_email"],
+                        output_path,
+                        phishing_details
+                    )
+                    if success:
+                        reported.add(candidate_domain)
+                        print(f"Reported typosquat candidate: {candidate_domain}")
+        time.sleep(interval_seconds)
+
+monitors = {}
+
+@app.route('/monitor-domain', methods=['POST'])
+def monitor_domain_endpoint():
+    try:
+        data = request.get_json()
+        if not data or "domain" not in data or "interval" not in data:
+            return jsonify({"error": "Both 'domain' and 'interval' parameters are required."}), 400
+        domain = data["domain"]
+        interval_seconds = parse_interval(data["interval"])
+        if domain in monitors:
+            return jsonify({"message": f"{domain} is already being monitored."})
+        thread = threading.Thread(target=monitor_task, args=(domain, interval_seconds), daemon=True)
+        monitors[domain] = thread
+        thread.start()
+        return jsonify({"message": f"Started monitoring {domain} every {data['interval']}."})
+    except Exception as e:
+        return jsonify({"error": f"Error starting monitor: {str(e)}"}), 500
 
 class PhishingReportGenerator:
     def __init__(self):
