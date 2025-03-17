@@ -6,7 +6,7 @@ const app = express();
 const connectDB = require("./config/db");
 const reportRoutes = require("./routes/reports");
 const userRoutes = require("./routes/userRoutes");
-
+const analyticsRoutes = require('./routes/analytics.js');
 // Import Report model - add this line
 const Report = mongoose.model(
   "Report",
@@ -15,7 +15,7 @@ const Report = mongoose.model(
 
 // Middleware - Order is important!
 app.use(express.json()); // Parse JSON bodies
-
+app.use('/api/analytics', analyticsRoutes);
 app.use(
   cors({
     origin: "http://localhost:3000", // Your frontend address

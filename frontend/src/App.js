@@ -4,8 +4,8 @@ import Login from "./pages/LoginPage";
 import Register from "./pages/register";
 import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/dashboard";
-import AboutUs from './pages/about';
-import Services from './pages/services';
+import AboutUs from "./pages/about";
+import Services from "./pages/services";
 import Home from "./pages/LandingPage";
 import Resources from "./pages/resources";
 import Navbar from "./pages/Navbar";// You'll need to create this component
@@ -21,6 +21,8 @@ const Layout = () => {
     </>
   );
 };
+
+import ReportTracker from "./pages/ReportTracker";
 
 function App() {
   return (
