@@ -20,6 +20,8 @@ function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    navigate("/HomePage");
+
     const checkAuth = async () => {
       try {
         const response = await fetch(
@@ -684,7 +686,6 @@ function LandingPage() {
           <img src="/fish.png" alt="Fish illustration" />
         </div>
       </main>
-     
     </div>
   );
 }

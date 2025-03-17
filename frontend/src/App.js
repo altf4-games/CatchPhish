@@ -1,5 +1,11 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  Outlet,
+} from "react-router-dom";
 import Login from "./pages/LoginPage";
 import Register from "./pages/register";
 import LandingPage from "./pages/LandingPage";
@@ -8,7 +14,7 @@ import AboutUs from "./pages/about";
 import Services from "./pages/services";
 import Home from "./pages/LandingPage";
 import Resources from "./pages/resources";
-import Navbar from "./pages/Navbar";// You'll need to create this component
+import Navbar from "./pages/Navbar"; // You'll need to create this component
 import ReportTracker from "./pages/ReportTracker";
 import HomePage from "./pages/HomePage";
 
@@ -24,7 +30,6 @@ const Layout = () => {
   );
 };
 
-
 function App() {
   return (
     <Router>
@@ -34,7 +39,6 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        
         {/* Routes with navbar */}
         <Route element={<Layout />}>
           <Route path="/LandingPage" element={<LandingPage />} />
@@ -43,9 +47,8 @@ function App() {
           <Route path="/services" element={<Services />} />
           <Route path="/resources" element={<Resources />} />
           <Route path="/HomePage" element={<HomePage />} />
-
         </Route>
-        
+
         {/* Catch all unmatched routes and redirect to login */}
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
