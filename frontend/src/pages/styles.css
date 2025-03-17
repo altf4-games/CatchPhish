@@ -453,3 +453,116 @@ body {
     align-items: center;
   }
 }
+
+.simple-captcha-container {
+  margin-top: 15px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.captcha-display {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  background: #f0f2f5;
+  border-radius: 4px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  width: 200px;
+  justify-content: space-between;
+}
+
+.captcha-text {
+  font-family: 'Courier New', monospace;
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 3px;
+  color: #333;
+  text-shadow: 1px 1px #ddd;
+  user-select: none;
+}
+
+.refresh-captcha-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: #666;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.refresh-captcha-btn:hover {
+  background-color: #e1e5eb;
+}
+
+.captcha-input-group {
+  display: flex;
+  width: 100%;
+  max-width: 240px;
+}
+
+.captcha-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px 0 0 4px;
+  font-size: 14px;
+}
+
+.verify-button {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.verify-button:hover {
+  background-color: #3a7bcb;
+}
+
+.verify-header {
+  display: flex;
+  align-items: center;
+}
+
+.message-alert.success {
+  color: green;
+  background-color: #e6f7e6;
+  border: 1px solid #c3e6c3;
+  padding: 8px;
+  margin: 10px 0;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.message-alert:not(.success) {
+  color: #d32f2f;
+  background-color: #fbe9e7;
+  border: 1px solid #ffcdd2;
+  padding: 8px;
+  margin: 10px 0;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.verified-badge {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.login-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}

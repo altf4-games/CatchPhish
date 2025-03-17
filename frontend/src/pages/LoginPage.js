@@ -1,15 +1,57 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./styles.css";
 import Navbar from "./Navbar";
+
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState(""); // Added missing state variable
+  const [message, setMessage] = useState("");
+  const [verified, setVerified] = useState(false);
+  const [captchaCode, setCaptchaCode] = useState("");
+  const [userInput, setUserInput] = useState("");
   const navigate = useNavigate();
+
+  // Generate random captcha code
+  const generateCaptcha = () => {
+    const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    let result = "";
+    for (let i = 0; i < 6; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+  };
+
+  // Generate initial captcha on component mount
+  useEffect(() => {
+    setCaptchaCode(generateCaptcha());
+  }, []);
+
+  const refreshCaptcha = () => {
+    setCaptchaCode(generateCaptcha());
+    setUserInput("");
+  };
+
+  const handleVerify = (e) => {
+    e.preventDefault();
+    if (userInput.toLowerCase() === captchaCode.toLowerCase()) {
+      setVerified(true);
+      setMessage("IP address verified successfully!");
+    } else {
+      setUserInput("");
+      setCaptchaCode(generateCaptcha());
+      setMessage("Incorrect verification code. Please try again.");
+    }
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    
+    if (!verified) {
+      setMessage("Please verify your IP address before logging in.");
+      return;
+    }
+    
     try {
       const response = await fetch('http://localhost:5000/api/users/login', {
         method: 'POST',
@@ -38,8 +80,6 @@ const Login = () => {
     <> 
     <Navbar></Navbar>
     <div className="login-container">
-
-
       <main className="main-content">
         <div className="login-card">
           <div className="login-form-container">
@@ -78,13 +118,57 @@ const Login = () => {
               </div>
 
               <div className="security-verify">
-                <i className="icon shield-icon"></i>
-                <span className="verify-text">Click to verify your IP address for enhanced security</span>
+                <div className="verify-header">
+                  <i className="icon shield-icon"></i>
+                  <span className="verify-text">
+                    Verify your IP address for enhanced security
+                    {verified && <span className="verified-badge"> ✓</span>}
+                  </span>
+                </div>
+                
+                {!verified && (
+                  <div className="simple-captcha-container">
+                    <div className="captcha-display">
+                      <div className="captcha-text">{captchaCode}</div>
+                      <button 
+                        type="button" 
+                        className="refresh-captcha-btn" 
+                        onClick={refreshCaptcha}
+                      >
+                        ↻
+                      </button>
+                    </div>
+                    <div className="captcha-input-group">
+                      <input
+                        type="text"
+                        placeholder="Enter code shown above"
+                        value={userInput}
+                        onChange={(e) => setUserInput(e.target.value)}
+                        className="captcha-input"
+                      />
+                      <button 
+                        type="button" 
+                        className="verify-button"
+                        onClick={handleVerify}
+                      >
+                        Verify
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {message && <div className="message-alert">{message}</div>}
+              {message && (
+                <div className={`message-alert ${verified ? "success" : ""}`}>
+                  {message}
+                </div>
+              )}
 
-              <button type="submit" className="login-button">
+              <button 
+                type="submit" 
+                className="login-button" 
+                disabled={!verified}
+              >
                 LOGIN
               </button>
 
