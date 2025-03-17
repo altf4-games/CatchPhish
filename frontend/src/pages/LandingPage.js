@@ -14,6 +14,9 @@ function Dashboard() {
   const [certInReportLoading, setCertInReportLoading] = useState(false);
   const [fuzzyResults, setFuzzyResults] = useState([]);
   const [fuzzyLoading, setFuzzyLoading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [fileAnalysisLoading, setFileAnalysisLoading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,7 +24,9 @@ function Dashboard() {
       try {
         const response = await fetch(
           "http://localhost:5000/api/users/check-session",
-          { credentials: "include" }
+          {
+            credentials: "include",
+          }
         );
         const data = await response.json();
         console.log("Authentication status:", data);
@@ -33,14 +38,14 @@ function Dashboard() {
     checkAuth();
   }, []);
 
-  const handleReportSubmission = async (url, actionTaken, status) => {
+  const handleReportSubmission = async (domain, actionTaken, status) => {
     if (!isAuthenticated) {
       setError("Please log in to submit reports");
       navigate("/login");
       return;
     }
     try {
-      const reportData = { url, actionTaken, status };
+      const reportData = { url: domain, actionTaken, status };
       const response = await fetch("http://localhost:5000/api/reports", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -56,16 +61,109 @@ function Dashboard() {
     }
   };
 
+  const handleFileAnalyze = async (file) => {
+    if (!file) {
+      setError("No file selected.");
+      return;
+    }
+
+    // Check file size (10MB max)
+    if (file.size > 10 * 1024 * 1024) {
+      setError("File size exceeds 10MB limit.");
+      return;
+    }
+
+    // Check file type
+    const allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
+    if (!allowedTypes.includes(file.type)) {
+      setError("File must be JPG, PNG, or PDF.");
+      return;
+    }
+
+    setFileAnalysisLoading(true);
+    setError("");
+
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const response = await axios.post(
+        "http://localhost:5001/api/phishing/analyze",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      const data = response.data;
+      console.log("Image Analysis API Response:", data);
+
+      const analysisResult = data.analysis;
+      const extractedData = data.extracted_data;
+
+      let phishingScore = 0;
+      let isPhishing = false;
+      let statusVal = "safe";
+      let actionTaken = "Marked Safe";
+
+      if (!analysisResult.error) {
+        phishingScore = analysisResult.phishing_score * 100;
+        isPhishing = phishingScore >= 60;
+        statusVal = isPhishing ? "phishing" : "safe";
+        actionTaken = isPhishing ? "Reported as Phishing" : "Marked Safe";
+      }
+
+      setResult({
+        type: "image",
+        domain: file.name,
+        risk_score: phishingScore.toFixed(2),
+        is_phishing: isPhishing,
+        actionTaken,
+        status: statusVal,
+        confidence: `${phishingScore.toFixed(2)}%`,
+        suspicious_indicators: analysisResult.suspicious_elements || [],
+        legitimate_indicators: analysisResult.legitimate_elements || [],
+        extracted_text: extractedData.text || "",
+        detected_logos: extractedData.logos || [],
+        detected_labels: extractedData.labels || [],
+        overall_assessment: analysisResult.overall_assessment || "",
+        risk_level: analysisResult.risk_level || "Unknown",
+        image_name: file.name,
+      });
+
+      if (isAuthenticated) {
+        try {
+          const reportResult = await handleReportSubmission(
+            file.name,
+            actionTaken,
+            statusVal
+          );
+          console.log("Report successfully saved:", reportResult);
+        } catch (reportError) {
+          console.error("Failed to save report:", reportError);
+          setError("Image analyzed successfully, but failed to save report.");
+        }
+      }
+    } catch (err) {
+      setError("Error analyzing the image. Please try again.");
+      console.error("Error:", err);
+    } finally {
+      setFileAnalysisLoading(false);
+    }
+  };
+
   const handleDownloadJSON = () => {
     if (!result) return;
     const jsonStr = JSON.stringify(result, null, 2);
     const blob = new Blob([jsonStr], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
+    const downloadUrl = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.href = url;
-    link.download = `${result.domain}_report.json`;
+    link.href = downloadUrl;
+    link.download = `${result.domain || "phishing"}_report.json`;
     link.click();
-    URL.revokeObjectURL(url);
+    URL.revokeObjectURL(downloadUrl);
   };
 
   const handleDownloadPDF = async () => {
@@ -74,17 +172,22 @@ function Dashboard() {
       const response = await axios.post(
         "http://127.0.0.1:5001/generate-pdf",
         result,
-        { responseType: "blob" }
+        {
+          responseType: "blob",
+        }
       );
       const blob = new Blob([response.data], { type: "application/pdf" });
-      const url = window.URL.createObjectURL(blob);
+      const downloadUrl = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `${result.domain}_report.pdf`);
+      link.href = downloadUrl;
+      link.setAttribute(
+        "download",
+        `${result.domain || "phishing"}_report.pdf`
+      );
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      window.URL.revokeObjectURL(downloadUrl);
     } catch (err) {
       console.error("Error generating PDF:", err);
       setError("Error generating PDF.");
@@ -118,15 +221,16 @@ function Dashboard() {
       const riskScore =
         vtScore + geminiScore + mlScore + openPhishScore + suspiciousScore;
       const isPhishing = riskScore >= 60;
-      const status = isPhishing ? "phishing" : "safe";
+      const statusVal = isPhishing ? "phishing" : "safe";
       const actionTaken = isPhishing ? "Reported as Phishing" : "Marked Safe";
 
       setResult({
+        type: "url",
         ...data,
         risk_score: riskScore.toFixed(2),
         is_phishing: isPhishing,
         actionTaken,
-        status,
+        status: statusVal,
       });
 
       setFuzzyLoading(true);
@@ -149,7 +253,7 @@ function Dashboard() {
           const reportResult = await handleReportSubmission(
             data.domain,
             actionTaken,
-            status
+            statusVal
           );
           console.log("Report successfully saved:", reportResult);
         } catch (reportError) {
@@ -165,23 +269,54 @@ function Dashboard() {
     }
   };
 
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      console.log("Selected file:", file.name);
+      handleFileAnalyze(file);
+    }
+  };
+
+  const handleDragLeave = (event) => {
+    event.preventDefault();
+    setDragActive(false);
+  };
+
+  const handleDragOver = (event) => {
+    event.preventDefault();
+    setDragActive(true);
+  };
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    setDragActive(false);
+    const file = event.dataTransfer.files[0];
+    if (file) {
+      setSelectedFile(file);
+      console.log("Dropped file:", file.name);
+      handleFileAnalyze(file);
+    }
+  };
+
   const handleCertInReport = async () => {
     if (!result) return;
     setCertInReportLoading(true);
     setCertInReportStatus(null);
     try {
-      // Fetch the current user's info to get the username
       const userResponse = await fetch("http://localhost:5000/api/users/me", {
         method: "GET",
         credentials: "include",
       });
       const userData = await userResponse.json();
-      const username = userData.username; // Assumes the response contains a "username" field
-
+      const username = userData.username;
       const jsonData = JSON.stringify(result);
       const response = await axios.post(
         "http://127.0.0.1:5001/generate-certin-report",
-        { reportData: jsonData, username: username } // New param "username" added
+        {
+          reportData: jsonData,
+          username: username,
+        }
       );
       if (response.data.success) {
         setCertInReportStatus({
@@ -213,27 +348,6 @@ function Dashboard() {
     return "#34C759";
   };
 
-  const handleFileSelect = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      console.log("Selected file:", file.name);
-      alert("File analysis feature coming soon!");
-    }
-  };
-
-  const handleDragOver = (event) => {
-    event.preventDefault();
-  };
-
-  const handleDrop = (event) => {
-    event.preventDefault();
-    const file = event.dataTransfer.files[0];
-    if (file) {
-      console.log("Dropped file:", file.name);
-      alert("File analysis feature coming soon!");
-    }
-  };
-
   return (
     <div className="dashboard">
       <div className="analysis-container">
@@ -256,39 +370,47 @@ function Dashboard() {
         </div>
 
         <div
-          className="upload-area"
+          className={`upload-area ${dragActive ? "active-drag" : ""}`}
           onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
           onDrop={handleDrop}
         >
-          <div className="upload-icon">↑</div>
-          <p>Select a file or drag and drop here</p>
-          <p className="file-info">
-            JPG, PNG or PDF, file size no more than 10MB
-          </p>
-          <input
-            type="file"
-            id="file-upload"
-            className="file-input"
-            onChange={handleFileSelect}
-            accept=".jpg,.png,.pdf"
-          />
-          <label htmlFor="file-upload" className="select-button">
-            SELECT FILE
-          </label>
+          {fileAnalysisLoading ? (
+            <div className="loading-indicator">
+              <div className="spinner"></div>
+              <p>Analyzing image...</p>
+            </div>
+          ) : (
+            <>
+              <div className="upload-icon">↑</div>
+              <p>Select a file or drag and drop here</p>
+              <p className="file-info">
+                JPG, PNG or PDF, file size no more than 10MB
+              </p>
+              <input
+                type="file"
+                id="file-upload"
+                className="file-input"
+                onChange={handleFileSelect}
+                accept=".jpg,.jpeg,.png,.pdf"
+              />
+              <label htmlFor="file-upload" className="select-button">
+                SELECT FILE
+              </label>
+            </>
+          )}
         </div>
       </div>
 
       {error && <p className="error-message">{error}</p>}
 
-      {result && (
+      {result && result.type === "url" && (
         <div className="result-container">
           <div className="result-header">
             <h2>Analysis Results</h2>
             <div
               className="risk-indicator"
-              style={{
-                backgroundColor: getRiskColor(result.risk_score),
-              }}
+              style={{ backgroundColor: getRiskColor(result.risk_score) }}
             >
               {result.is_phishing ? "⚠️ PHISHING DETECTED" : "✅ SAFE"}
               <span style={{ display: "block", fontSize: "0.8em" }}>
@@ -334,22 +456,33 @@ function Dashboard() {
             <div className="detail-item">
               <strong>Detection Summary:</strong>
               <ul>
-                <li>
-                  VirusTotal: {result.virustotal.malicious_engines} of{" "}
-                  {result.virustotal.total_engines} vendors flagged as malicious
-                </li>
-                <li>
-                  OpenPhish:{" "}
-                  {result.openphish_flagged
-                    ? "Detected as phishing"
-                    : "Not found in database"}
-                </li>
+                {result.virustotal && (
+                  <li>
+                    VirusTotal: {result.virustotal.malicious_engines} of{" "}
+                    {result.virustotal.total_engines} vendors flagged as
+                    malicious
+                  </li>
+                )}
+                {result.openphish_flagged !== undefined && (
+                  <li>
+                    OpenPhish:{" "}
+                    {result.openphish_flagged
+                      ? "Detected as phishing"
+                      : "Not found in database"}
+                  </li>
+                )}
                 <li>
                   Suspicious Patterns:{" "}
                   {result.suspicious_indicators?.length || 0} detected
                 </li>
-                <li>Gemini Risk Score: {result.gemini_analysis.risk_score}</li>
-                <li>ML Prediction: {result.ml_prediction}% chance</li>
+                {result.gemini_analysis && (
+                  <li>
+                    Gemini Risk Score: {result.gemini_analysis.risk_score}
+                  </li>
+                )}
+                {result.ml_prediction !== undefined && (
+                  <li>ML Prediction: {result.ml_prediction}% chance</li>
+                )}
               </ul>
             </div>
 
@@ -432,9 +565,101 @@ function Dashboard() {
           </div>
         </div>
       )}
+
+      {result && result.type === "image" && (
+        <div className="result-container">
+          <div className="result-header">
+            <h2>Image Analysis Results</h2>
+            {(() => {
+              const fileRisk = result.risk_score;
+              const isPhishing = result.is_phishing;
+              return (
+                <div
+                  className="risk-indicator"
+                  style={{ backgroundColor: getRiskColor(fileRisk) }}
+                >
+                  {isPhishing ? "⚠️ PHISHING DETECTED" : "✅ SAFE"}
+                  <span style={{ display: "block", fontSize: "0.8em" }}>
+                    Confidence: {result.confidence}
+                  </span>
+                </div>
+              );
+            })()}
+          </div>
+
+          <div className="result-details">
+            <div className="detail-item">
+              <strong>Risk Level:</strong> {result.risk_level}
+            </div>
+            <div className="detail-item">
+              <strong>Overall Assessment:</strong> {result.overall_assessment}
+            </div>
+            {result.suspicious_indicators &&
+              result.suspicious_indicators.length > 0 && (
+                <div className="detail-item">
+                  <strong>Suspicious Elements:</strong>
+                  <ul className="indicators-list">
+                    {result.suspicious_indicators.map((elem, index) => (
+                      <li key={index}>{elem}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            {result.legitimate_indicators &&
+              result.legitimate_indicators.length > 0 && (
+                <div className="detail-item">
+                  <strong>Legitimate Elements:</strong>
+                  <ul className="indicators-list">
+                    {result.legitimate_indicators.map((elem, index) => (
+                      <li key={index}>{elem}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            <div className="detail-item">
+              <strong>Extracted Text:</strong>
+              <pre>{result.extracted_text}</pre>
+            </div>
+            {result.detected_logos && result.detected_logos.length > 0 && (
+              <div className="detail-item">
+                <strong>Detected Logos:</strong>
+                <ul className="indicators-list">
+                  {result.detected_logos.map((logo, index) => (
+                    <li key={index}>
+                      {logo.description} (Confidence:{" "}
+                      {(logo.confidence * 100).toFixed(2)}%)
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {result.detected_labels && result.detected_labels.length > 0 && (
+              <div className="detail-item">
+                <strong>Detected Labels:</strong>
+                <ul className="indicators-list">
+                  {result.detected_labels.map((label, index) => (
+                    <li key={index}>
+                      {label.description} (Confidence:{" "}
+                      {(label.confidence * 100).toFixed(2)}%)
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+
+          <div className="download-buttons">
+            <button onClick={handleDownloadJSON}>
+              Download Report as JSON
+            </button>
+            <button onClick={handleDownloadPDF}>Download Report as PDF</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
 function LandingPage() {
   return (
     <div className="landing-page">

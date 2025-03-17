@@ -3,6 +3,7 @@ requests
 flask
 beautifulsoup4
 google-genai
+google-generativeai
 flask_cors
 dnspython
 html5lib
@@ -13,3 +14,4 @@ python-docx
 reportlab
 fuzzywuzzy
 rapidfuzz
+google-cloud-vision
