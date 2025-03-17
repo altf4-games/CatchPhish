@@ -11,7 +11,7 @@
   display: flex;
   position: relative;
   padding: 60px 40px;
-  background: linear-gradient(135deg, #0a1155 0%, #2a3990 100%);
+  background: none;
   overflow: hidden;
 }
 

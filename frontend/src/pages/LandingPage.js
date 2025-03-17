@@ -673,7 +673,7 @@ function LandingPage() {
           <div className="main-logo">
             <img src="./LOGO.png" alt="CatchPhish" />
             <h1>Catch</h1>
-            <p>Phish</p>
+            <p>Phish</p>  
           </div>
           <p className="description">
             Analyze suspicious domains, IPs and URLs to detect phishing and
