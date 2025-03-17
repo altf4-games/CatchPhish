@@ -459,9 +459,7 @@ function LandingPage() {
           <img src="/fish.png" alt="Fish illustration" />
         </div>
       </main>
-      <div className="footer">
-        <p>Copyright © CatchPhish Securities, All rights reserved</p>
-      </div>
+     
     </div>
   );
 }

@@ -1,347 +1,395 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import Dashboard from "./dashboard"; // Assuming Dashboard component is available
+import "./HomePage.css";
+import LandingPage from "./LandingPage";
 
 const HomePage = () => {
+  const canvasRef = useRef(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    // Set up particles for network visualization
+    const particles = [];
+    const particleCount = 100;
+    const connectionDistance = 150;
+    
+    // Create particles
+    for (let i = 0; i < particleCount; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 2 + 1,
+        speedX: (Math.random() - 0.5) * 0.5,
+        speedY: (Math.random() - 0.5) * 0.5,
+        color: `rgba(${Math.random() * 100 + 100}, ${Math.random() * 100 + 100}, 255, ${Math.random() * 0.5 + 0.2})`
+      });
+    }
+    
+    // Animation function
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Update and draw particles
+      for (let i = 0; i < particles.length; i++) {
+        let p = particles[i];
+        
+        // Update position
+        p.x += p.speedX;
+        p.y += p.speedY;
+        
+        // Bounce off edges
+        if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+        
+        // Draw particle
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+        
+        // Connect particles
+        for (let j = i + 1; j < particles.length; j++) {
+          let p2 = particles[j];
+          let distance = Math.sqrt(Math.pow(p.x - p2.x, 2) + Math.pow(p.y - p2.y, 2));
+          
+          if (distance < connectionDistance) {
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(100, 150, 255, ${(1 - distance/connectionDistance) * 0.2})`;
+            ctx.lineWidth = 1;
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+          }
+        }
+      }
+      
+      requestAnimationFrame(animate);
+    }
+    
+    animate();
+    
+    // Handle window resize
+    const handleResize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   return (
-    <div className="bg-gradient-to-b from-[#f5f8fb] to-[#e6f2fa] min-h-screen">
-      {/* Hero Section */}
-      <section className="pt-16 pb-20 px-4">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center">
-          <div className="md:w-1/2 mb-10 md:mb-0">
-            <h1 className="text-4xl md:text-5xl font-bold text-[#0a1a4b] mb-6">
-              Protect Your Digital Identity From{" "}
-              <span className="text-[#fdbc40]">Phishing Attacks</span>
-            </h1>
-            <p className="text-lg text-gray-600 mb-8">
-              CatchPhish uses advanced AI and machine learning to detect and report
-              phishing domains before they can harm you or your organization.
+    <>
+      <canvas 
+        ref={canvasRef} 
+        className="fixed top-0 left-0 w-full h-full pointer-events-none z-0"
+        style={{ opacity: 0.4 }}
+      />
+      <div className="bg-gradient-to-b from-[#0a192f] to-[#112240] min-h-screen text-white relative z-10">
+        {/* Hero Section */}
+        <div className="absolute top-0 left-0 w-full h-full opacity-20 bg-pattern-grid z-0"></div>
+        <LandingPage />
+        
+        
+
+        {/* How It Works */}
+        <section className="py-16 px-4 relative z-10">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold text-white mb-4 tracking-tight glow-text">
+                How CatchPhish Works
+              </h2>
+              <p className="text-lg text-blue-200 max-w-3xl mx-auto leading-relaxed">
+                Our multi-layered detection system provides comprehensive protection
+                against phishing threats.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="bg-gradient-to-br from-[#1e3a6d] to-[#152a50] p-8 rounded-xl shadow-md hover:shadow-xl transition duration-300 border border-[#2a4d8a] transform hover:-translate-y-1 hover:scale-105">
+                <div className="w-16 h-16 bg-[#ff6b00] bg-opacity-20 rounded-full flex items-center justify-center mb-6 glow-orange">
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    className="h-8 w-8 text-[#ff6b00]" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-3">
+                  1. Scan & Analyze
+                </h3>
+                <p className="text-blue-200">
+                  Enter any suspicious URL, domain, or IP address and our system will
+                  scan it against multiple threat databases and analyze it for
+                  suspicious patterns.
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-br from-[#1e3a6d] to-[#152a50] p-8 rounded-xl shadow-md hover:shadow-xl transition duration-300 border border-[#2a4d8a] transform hover:-translate-y-1 hover:scale-105">
+                <div className="w-16 h-16 bg-[#ff6b00] bg-opacity-20 rounded-full flex items-center justify-center mb-6 glow-orange">
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    className="h-8 w-8 text-[#ff6b00]" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-3">
+                  2. AI Detection
+                </h3>
+                <p className="text-blue-200">
+                  Our advanced AI and machine learning algorithms identify
+                  sophisticated phishing attacks by analyzing website content,
+                  behavior, and technical indicators.
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-br from-[#1e3a6d] to-[#152a50] p-8 rounded-xl shadow-md hover:shadow-xl transition duration-300 border border-[#2a4d8a] transform hover:-translate-y-1 hover:scale-105">
+                <div className="w-16 h-16 bg-[#ff6b00] bg-opacity-20 rounded-full flex items-center justify-center mb-6 glow-orange">
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    className="h-8 w-8 text-[#ff6b00]" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-3">
+                  3. Report & Protect
+                </h3>
+                <p className="text-blue-200">
+                  Get detailed reports on detected threats and automatically submit
+                  them to CERT-In and other cybersecurity agencies to protect the
+                  community.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Features */}
+        <section className="bg-[#0a192f] py-16 px-4 border-t border-[#1e3a6d] relative z-10">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold text-white mb-4 tracking-tight glow-text">
+                Powerful Features
+              </h2>
+              <p className="text-lg text-blue-200 max-w-3xl mx-auto leading-relaxed">
+                CatchPhish offers a comprehensive set of tools to protect you from
+                phishing threats.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="flex items-start p-6 bg-gradient-to-br from-[#1e3a6d] to-[#152a50] rounded-xl border border-[#2a4d8a] hover:shadow-lg transition duration-300 transform hover:-translate-y-1">
+                <div className="flex-shrink-0 mr-4">
+                  <div className="w-12 h-12 bg-[#ff6b00] bg-opacity-20 rounded-lg flex items-center justify-center glow-orange">
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      className="h-6 w-6 text-[#ff6b00]" 
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    Real-time Threat Analysis
+                  </h3>
+                  <p className="text-blue-200">
+                    Analyze URLs in real-time against multiple threat databases,
+                    including VirusTotal and OpenPhish, to identify known threats.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start p-6 bg-gradient-to-br from-[#1e3a6d] to-[#152a50] rounded-xl border border-[#2a4d8a] hover:shadow-lg transition duration-300 transform hover:-translate-y-1">
+                <div className="flex-shrink-0 mr-4">
+                  <div className="w-12 h-12 bg-[#ff6b00] bg-opacity-20 rounded-lg flex items-center justify-center glow-orange">
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      className="h-6 w-6 text-[#ff6b00]" 
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    AI-Powered Detection
+                  </h3>
+                  <p className="text-blue-200">
+                    Our advanced machine learning algorithms detect even the newest
+                    phishing sites that haven't been reported yet.
+                  </p>
+                </div>
+              </div>
+
+            <div className="flex items-start p-6 bg-gradient-to-br from-[#1e3a6d] to-[#152a50] rounded-xl border border-[#2a4d8a] hover:shadow-lg transition duration-300 transform hover:-translate-y-1">
+                <div className="flex-shrink-0 mr-4">
+                  <div className="w-12 h-12 bg-[#ff6b00] bg-opacity-20 rounded-lg flex items-center justify-center glow-orange">
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      className="h-6 w-6 text-[#ff6b00]" 
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    Detailed Reports
+                  </h3>
+                  <p className="text-blue-200">
+                    Get comprehensive reports with risk scores, suspicious
+                    indicators, and screenshots of potential phishing sites.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start p-6 bg-gradient-to-br from-[#1e3a6d] to-[#152a50] rounded-xl border border-[#2a4d8a] hover:shadow-lg transition duration-300 transform hover:-translate-y-1">
+                <div className="flex-shrink-0 mr-4">
+                  <div className="w-12 h-12 bg-[#ff6b00] bg-opacity-20 rounded-lg flex items-center justify-center glow-orange">
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      className="h-6 w-6 text-[#ff6b00]" 
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    CERT-In Integration
+                  </h3>
+                  <p className="text-blue-200">
+                    Easily submit detected phishing sites to the Indian Computer
+                    Emergency Response Team (CERT-In) to protect the community.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Testimonials */}
+        <section className="py-16 px-4 relative z-10">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold text-white mb-4 tracking-tight glow-text">
+                What Our Users Say
+              </h2>
+              <p className="text-lg text-blue-200 max-w-3xl mx-auto leading-relaxed">
+                Join thousands of satisfied users who trust CatchPhish to protect
+                them from phishing attacks.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="bg-gradient-to-br from-[#1e3a6d] to-[#152a50] p-8 rounded-xl shadow-lg hover:shadow-xl transition duration-300 border border-[#2a4d8a] transform hover:-translate-y-1">
+                <div className="flex items-center mb-6">
+                  <div className="w-12 h-12 bg-blue-600 bg-opacity-20 rounded-full flex items-center justify-center mr-4 border border-blue-400">
+                    <span className="text-blue-400 font-bold">RS</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-white">Rahul Sharma</h4>
+                    <p className="text-sm text-blue-300">Security Manager, TechCorp</p>
+                  </div>
+                </div>
+                <p className="text-blue-200 italic">
+                  "CatchPhish has been instrumental in protecting our organization from sophisticated phishing attempts. The AI detection is remarkably accurate."
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-br from-[#1e3a6d] to-[#152a50] p-8 rounded-xl shadow-lg hover:shadow-xl transition duration-300 border border-[#2a4d8a] transform hover:-translate-y-1">
+                <div className="flex items-center mb-6">
+                  <div className="w-12 h-12 bg-green-600 bg-opacity-20 rounded-full flex items-center justify-center mr-4 border border-green-400">
+                    <span className="text-green-400 font-bold">AP</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-white">Aarti Patel</h4>
+                    <p className="text-sm text-blue-300">IT Director, FinServe Ltd</p>
+                  </div>
+                </div>
+                <p className="text-blue-200 italic">
+                  "We've reduced successful phishing attacks by 98% since implementing CatchPhish. The reporting feature is excellent for compliance requirements."
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-br from-[#1e3a6d] to-[#152a50] p-8 rounded-xl shadow-lg hover:shadow-xl transition duration-300 border border-[#2a4d8a] transform hover:-translate-y-1">
+                <div className="flex items-center mb-6">
+                  <div className="w-12 h-12 bg-purple-600 bg-opacity-20 rounded-full flex items-center justify-center mr-4 border border-purple-400">
+                    <span className="text-purple-400 font-bold">VK</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-white">Vikram Kumar</h4>
+                    <p className="text-sm text-blue-300">Cybersecurity Analyst</p>
+                  </div>
+                </div>
+                <p className="text-blue-200 italic">
+                  "As a security professional, I appreciate the technical depth of CatchPhish's analysis. It catches things that other tools miss completely."
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="bg-gradient-to-r from-[#304ffe] to-[#5471e5] py-16 px-4 relative overflow-hidden z-10">
+          <div className="absolute top-0 left-0 w-full h-full">
+            <div className="absolute top-0 left-0 w-full h-full opacity-10"></div>
+            <div className="absolute top-0 left-0 w-full h-full" style={{
+              background: 'radial-gradient(circle at 50% 50%, rgba(100, 100, 255, 0.1) 0%, rgba(0, 0, 50, 0.2) 100%)'
+            }}></div>
+          </div>
+          <div className="max-w-7xl mx-auto text-center relative z-10">
+            <h2 className="text-4xl font-bold text-white mb-6 tracking-tight glow-text">
+              Start Protecting Your Digital Identity Today
+            </h2>
+            <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
+              Join thousands of organizations and individuals who trust CatchPhish to keep them safe from phishing attacks.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button className="bg-gradient-to-r from-[#304ffe] to-[#5471e5] text-white py-3 px-8 rounded-lg font-medium hover:shadow-lg transition duration-300 transform hover:-translate-y-1">
-                Try It Free
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <button className="bg-white text-[#304ffe] py-3 px-8 rounded-lg font-medium hover:shadow-lg transition duration-300 transform hover:-translate-y-1 hover:shadow-blue-500/50">
+                Get Started For Free
               </button>
-              <button className="border-2 border-[#304ffe] text-[#304ffe] py-3 px-8 rounded-lg font-medium hover:bg-blue-50 transition duration-300">
-                Watch Demo
+              <button className="border-2 border-white text-white py-3 px-8 rounded-lg font-medium hover:bg-white hover:bg-opacity-10 transition duration-300 transform hover:-translate-y-1">
+                Contact Sales
               </button>
             </div>
           </div>
-          <div className="md:w-1/2 relative">
-            <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
-            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-yellow-100 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
-            <img
-              src="/security-dashboard.png"
-              alt="Security Dashboard"
-              className="relative z-10 rounded-xl shadow-2xl"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = "/api/placeholder/600/400";
-              }}
-            />
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* CatchPhish Dashboard */}
-      <section className="bg-white py-16 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-[#0a1a4b] mb-4">
-              Check Any URL In Seconds
-            </h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Our advanced analysis engine checks URLs against multiple threat
-              databases and uses AI to detect even the most sophisticated phishing
-              attempts.
-            </p>
-          </div>
-          <div className="bg-[#f5f8fb] p-8 rounded-xl shadow-lg">
-            <Dashboard />
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="py-16 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-[#0a1a4b] mb-4">
-              How CatchPhish Works
-            </h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Our multi-layered detection system provides comprehensive protection
-              against phishing threats.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-xl shadow-md hover:shadow-xl transition duration-300">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6">
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  className="h-8 w-8 text-blue-600" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-[#0a1a4b] mb-3">
-                1. Scan & Analyze
-              </h3>
-              <p className="text-gray-600">
-                Enter any suspicious URL, domain, or IP address and our system will
-                scan it against multiple threat databases and analyze it for
-                suspicious patterns.
-              </p>
-            </div>
-
-            <div className="bg-white p-8 rounded-xl shadow-md hover:shadow-xl transition duration-300">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6">
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  className="h-8 w-8 text-green-600" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-[#0a1a4b] mb-3">
-                2. AI Detection
-              </h3>
-              <p className="text-gray-600">
-                Our advanced AI and machine learning algorithms identify
-                sophisticated phishing attacks by analyzing website content,
-                behavior, and technical indicators.
-              </p>
-            </div>
-
-            <div className="bg-white p-8 rounded-xl shadow-md hover:shadow-xl transition duration-300">
-              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-6">
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  className="h-8 w-8 text-red-600" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-[#0a1a4b] mb-3">
-                3. Report & Protect
-              </h3>
-              <p className="text-gray-600">
-                Get detailed reports on detected threats and automatically submit
-                them to CERT-In and other cybersecurity agencies to protect the
-                community.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="bg-white py-16 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-[#0a1a4b] mb-4">
-              Powerful Features
-            </h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              CatchPhish offers a comprehensive set of tools to protect you from
-              phishing threats.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="flex items-start p-6 bg-blue-50 rounded-xl">
-              <div className="flex-shrink-0 mr-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    className="h-6 w-6 text-blue-600" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
-                </div>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-[#0a1a4b] mb-2">
-                  Real-time Threat Analysis
-                </h3>
-                <p className="text-gray-600">
-                  Analyze URLs in real-time against multiple threat databases,
-                  including VirusTotal and OpenPhish, to identify known threats.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start p-6 bg-green-50 rounded-xl">
-              <div className="flex-shrink-0 mr-4">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    className="h-6 w-6 text-green-600" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                </div>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-[#0a1a4b] mb-2">
-                  AI-Powered Detection
-                </h3>
-                <p className="text-gray-600">
-                  Our advanced machine learning algorithms detect even the newest
-                  phishing sites that haven't been reported yet.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start p-6 bg-purple-50 rounded-xl">
-              <div className="flex-shrink-0 mr-4">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    className="h-6 w-6 text-purple-600" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-[#0a1a4b] mb-2">
-                  Detailed Reports
-                </h3>
-                <p className="text-gray-600">
-                  Get comprehensive reports with risk scores, suspicious
-                  indicators, and screenshots of potential phishing sites.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start p-6 bg-yellow-50 rounded-xl">
-              <div className="flex-shrink-0 mr-4">
-                <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    className="h-6 w-6 text-yellow-600" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                  </svg>
-                </div>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-[#0a1a4b] mb-2">
-                  CERT-In Integration
-                </h3>
-                <p className="text-gray-600">
-                  Easily submit detected phishing sites to the Indian Computer
-                  Emergency Response Team (CERT-In) to protect the community.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-16 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-[#0a1a4b] mb-4">
-              What Our Users Say
-            </h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Join thousands of satisfied users who trust CatchPhish to protect
-              them from phishing attacks.
-            </p>
-            </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-xl shadow-md hover:shadow-xl transition duration-300">
-              <div className="flex items-center mb-6">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-                  <span className="text-blue-600 font-bold">RS</span>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-[#0a1a4b]">Rahul Sharma</h4>
-                  <p className="text-sm text-gray-500">Security Manager, TechCorp</p>
-                </div>
-              </div>
-              <p className="text-gray-600 italic">
-                "CatchPhish has been instrumental in protecting our organization from sophisticated phishing attempts. The AI detection is remarkably accurate."
-              </p>
-            </div>
-
-            <div className="bg-white p-8 rounded-xl shadow-md hover:shadow-xl transition duration-300">
-              <div className="flex items-center mb-6">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
-                  <span className="text-green-600 font-bold">AP</span>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-[#0a1a4b]">Aarti Patel</h4>
-                  <p className="text-sm text-gray-500">IT Director, FinServe Ltd</p>
-                </div>
-              </div>
-              <p className="text-gray-600 italic">
-                "We've reduced successful phishing attacks by 98% since implementing CatchPhish. The reporting feature is excellent for compliance requirements."
-              </p>
-            </div>
-
-            <div className="bg-white p-8 rounded-xl shadow-md hover:shadow-xl transition duration-300">
-              <div className="flex items-center mb-6">
-                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
-                  <span className="text-purple-600 font-bold">VK</span>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-[#0a1a4b]">Vikram Kumar</h4>
-                  <p className="text-sm text-gray-500">Cybersecurity Analyst</p>
-                </div>
-              </div>
-              <p className="text-gray-600 italic">
-                "As a security professional, I appreciate the technical depth of CatchPhish's analysis. It catches things that other tools miss completely."
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="bg-gradient-to-r from-[#304ffe] to-[#5471e5] py-16 px-4">
-        <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-white mb-6">
-            Start Protecting Your Digital Identity Today
-          </h2>
-          <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
-            Join thousands of organizations and individuals who trust CatchPhish to keep them safe from phishing attacks.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <button className="bg-white text-[#304ffe] py-3 px-8 rounded-lg font-medium hover:shadow-lg transition duration-300 transform hover:-translate-y-1">
-              Get Started For Free
-            </button>
-            <button className="border-2 border-white text-white py-3 px-8 rounded-lg font-medium hover:bg-white hover:bg-opacity-10 transition duration-300">
-              Contact Sales
-            </button>
-          </div>
-        </div>
-      </section>
-
+      
       {/* Footer */}
       <footer className="bg-[#0a1a4b] text-white py-12 px-4">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -401,6 +449,7 @@ const HomePage = () => {
         </div>
       </footer>
     </div>
+  </>
   );
 };
 
