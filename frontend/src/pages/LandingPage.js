@@ -56,6 +56,8 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    navigate("/HomePage");
+
     const checkAuth = async () => {
       try {
         const response = await fetch(
