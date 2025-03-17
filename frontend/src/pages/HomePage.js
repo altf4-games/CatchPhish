@@ -111,8 +111,7 @@ const HomePage = () => {
         style={{ background: "linear-gradient(135deg, #060d40 0%, #1a2980 100%)" }}
       >
         {/* Hero Section */}
-        <div className="absolute top-0 left-0 w-full h-full opacity-20 bg-pattern-grid z-0">     
-        </div>
+        <div className="absolute top-0 left-0 w-full h-full opacity-20 bg-pattern-grid z-0"></div>
         <LandingPage />
         
         {/* How It Works */}

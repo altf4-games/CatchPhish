@@ -3,6 +3,7 @@ import "./LandingPage.css";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import BackgroundCanvas from "./BackgroundCanvas";
 
 function Dashboard() {
   const [url, setUrl] = useState("");
@@ -665,6 +666,8 @@ function Dashboard() {
 function LandingPage() {
   return (
     <div className="landing-page">
+      <BackgroundCanvas></BackgroundCanvas>{/* Add the canvas background */}
+
       <main className="main-content">
         <div className="net-illustration">
           <img src="/net.png" alt="Fishing net illustration" />
@@ -673,7 +676,7 @@ function LandingPage() {
           <div className="main-logo">
             <img src="./LOGO.png" alt="CatchPhish" />
             <h1>Catch</h1>
-            <p>Phish</p>  
+            <p>Phish</p>
           </div>
           <p className="description">
             Analyze suspicious domains, IPs and URLs to detect phishing and
