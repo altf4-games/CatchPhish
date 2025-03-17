@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CatchPhish Protector</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      }
+      body {
+        width: 350px;
+        background-color: #0f1520;
+        color: #fff;
+      }
+      .container {
+        padding: 6px;
+      }
+      .header {
+        margin-bottom: 16px;
+        text-align: center;
+      }
+      .header img.logo {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 8px;
+      }
+      .header h1 {
+        font-size: 20px;
+        font-weight: 500;
+      }
+      .stats-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .stat-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .domain-label,
+      .stat-label {
+        font-size: 12px;
+        color: #aaa;
+      }
+      .domain,
+      .stat-value {
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .analysis-link {
+        display: block;
+        color: #4caf50;
+        font-size: 14px;
+        text-decoration: none;
+        margin: 8px 0;
+      }
+      .analysis-link:hover {
+        text-decoration: underline;
+      }
+      .external-icon {
+        font-size: 12px;
+        margin-left: 4px;
+      }
+      .actions-section {
+        background-color: #0a8a0a;
+        padding: 6px;
+        position: relative;
+        overflow: hidden;
+      }
+      .actions-title {
+        font-size: 16px;
+        margin-bottom: 16px;
+        font-weight: 500;
+      }
+      .submit-button {
+        background-color: white;
+        color: #333;
+        border: none;
+        border-radius: 24px;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 180px;
+      }
+      .submit-button::after {
+        content: "▼";
+        font-size: 10px;
+        margin-left: 8px;
+      }
+      .footer {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 14px;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.9);
+      }
+      .footer-item {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .footer-label {
+        font-weight: normal;
+      }
+      .footer-value {
+        font-weight: 500;
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        font-weight: bold;
+      }
+      .logo-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        margin-right: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .big-span {
+        font-size: 18px; /* Adjust size as needed */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="stats-container">
+        <div class="stat-group">
+          <div class="domain-label">Url/Domain</div>
+          <div class="domain" id="domainDisplay">Loading...</div>
+        </div>
+        <div class="stat-group">
+          <div class="stat-label">Phishing Confidence Score</div>
+          <div class="stat-value" id="phishingConfidence">0%</div>
+        </div>
+        <div class="stat-group">
+          <div class="stat-label">Phishing Status</div>
+          <div class="stat-value" id="phishingStatus">Unknown</div>
+        </div>
+        <div class="stat-group">
+          <div class="stat-label">Action Taken</div>
+          <div class="stat-value" id="actionTaken">None</div>
+        </div>
+      </div>
+      <a href="#" class="analysis-link" id="analysisLink">
+        View Detailed Analysis <span class="external-icon">↗</span>
+      </a>
+    </div>
+    <div class="actions-section">
+      <div class="actions-title">Actions</div>
+      <button class="submit-button" id="submitReviewButton">
+        Submit for Review
+      </button>
+      <div class="footer">
+        <div class="footer-item">
+          <div class="footer-label">Total Reports</div>
+          <div class="footer-value" id="totalReports">0</div>
+        </div>
+        <div class="footer-item">
+          <div class="footer-label">Last Updated</div>
+          <div class="footer-value" id="lastUpdated">Just now</div>
+        </div>
+        <div class="logo">
+          <div class="logo-icon">
+            <img
+              src="images/logo.png"
+              alt="Logo Icon"
+              style="width: 100%; height: 100%; object-fit: contain"
+            />
+          </div>
+          <span class="big-span"
+            >Catch<span style="color: #4caf50">Phish</span></span
+          >
+        </div>
+      </div>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>
