@@ -37,7 +37,7 @@ SCREENSHOT_API_KEY = "0218086a7bca4e76a57da8abb0d5166f"
 SCREENSHOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "screenshots")
 MODEL_PATH = "Malicious_URL_Prediction.h5"
 GEMINI_API_KEY = "AIzaSyDc4B__rW4_zlwePV5xFiaUDOCBEbHtS0s"
-OPENPHISH_FEED_URL = "https://openphish.com/feed.txt"
+OPENPHISH_FEED_URL = "https://raw.githubusercontent.com/openphish/public_feed/refs/heads/main/feed.txt"
 
 app = Flask(__name__)
 CORS(app)
@@ -107,22 +107,36 @@ def check_virustotal(domain):
         print(f"VirusTotal error: {e}")
     return {"error": "Could not fetch from VirusTotal"}
 
+import urllib.parse
+
 def fetch_openphish():
     try:
-        response = requests.get(OPENPHISH_FEED_URL, timeout=10)
+        response = requests.get(OPENPHISH_FEED_URL, timeout=30)
         response.raise_for_status()
-        return response.text.split("\n")
+        urls = response.text.split("\n")
+        # Extract domains from URLs
+        domains = []
+        for url in urls:
+            if url:  # Skip empty lines
+                try:
+                    parsed = urllib.parse.urlparse(url)
+                    domain = parsed.netloc
+                    if domain:
+                        domains.append(domain)
+                except:
+                    continue
+        return domains
     except Exception as e:
         print(f"OpenPhish error: {e}")
         return []
 
 def check_openphish(domain, phishing_list):
-    return any(domain in url for url in phishing_list if url)
+    return domain in phishing_list  # Direct domain comparison
 
 def check_suspicious_patterns(domain):
     suspicious_indicators = []
-    if domain.count('-') > 2:
-        suspicious_indicators.append("Excessive dashes in domain name")
+    if domain.count('-') > 0:  # Changed from > 2 to > 0
+        suspicious_indicators.append("Contains dashes in domain name")
     if re.search(r"[^a-zA-Z0-9.-]", domain):
         suspicious_indicators.append("Contains unusual symbols")
     return suspicious_indicators
@@ -914,18 +928,48 @@ def fuzzy_search():
             return jsonify({"error": "Domain parameter is missing."}), 400
         
         query_domain = clean_domain(data["domain"])
-        registered_domains = load_domains()
+        registered_domains = load_domains_from_api(query_domain)
         
         if not registered_domains:
             return jsonify({"error": "Domain list is empty or could not be loaded."}), 500
         
         # Use RapidFuzz's process.extract for faster fuzzy matching
+        # This already returns top matches sorted by score (highest first)
         matches = process.extract(query_domain, registered_domains, scorer=fuzz.ratio, limit=10)
+        
+        # Return the top 10 matches directly
         return jsonify({"query": query_domain, "matches": matches})
     
     except Exception as e:
         print(f"Error in fuzzy search: {e}")
         return jsonify({"error": "Internal server error"}), 500
+
+def load_domains_from_api(search_term):
+    try:
+        url = "https://brand-alert.whoisxmlapi.com/api/v2"
+        payload = {
+            "apiKey": "at_pxagA5NDxSiauY63yBWojnhzfsN19",
+            "sinceDate": "2025-03-10",
+            "mode": "purchase",
+            "withTypos": False,
+            "responseFormat": "json",
+            "punycode": True,
+            "includeSearchTerms": [search_term],
+            "excludeSearchTerms": []
+        }
+        
+        response = requests.post(url, json=payload)
+        if response.status_code == 200:
+            result = response.json()
+            # Extract just the domain names from the response
+            domains = [domain["domainName"] for domain in result.get("domainsList", [])]
+            return domains
+        else:
+            print(f"API request failed with status code: {response.status_code}")
+            return []
+    except Exception as e:
+        print(f"Error loading domains from API: {e}")
+        return []
     
 from logo import phishing_api
 
