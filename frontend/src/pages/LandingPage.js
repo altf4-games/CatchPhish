@@ -503,10 +503,14 @@ function Dashboard() {
             {result.screenshot && (
               <div className="detail-item">
                 <strong>Screenshot:</strong>
+                {console.log("Screenshot URL:", result.screenshot)}
                 <img
-                  src={`http://127.0.0.1:5001${result.screenshot}`}
+                  src={`http://localhost:5001${result.screenshot}`}
                   alt="Website Screenshot"
-                  style={{ width: "100px" }}
+                  style={{ width: "256px" }}
+                  onError={(e) =>
+                    console.error("Image failed to load:", e.target.src)
+                  }
                 />
               </div>
             )}
@@ -689,7 +693,6 @@ function LandingPage() {
           <img src="/fish.png" alt="Fish illustration" />
         </div>
       </main>
-     
     </div>
   );
 }

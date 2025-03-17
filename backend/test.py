@@ -29,17 +29,18 @@ import threading
 import time
 import difflib
 
-app = Flask(__name__)
-CORS(app)
 
 VT_API_KEY = "3ea2281a21cf2df9edd36bd5660fa0eaac196e49397ba87d71f118d98982289e"
 WHOIS_API_HOST = "zozor54-whois-lookup-v1.p.rapidapi.com"
 WHOIS_API_KEY = "d484df19c6msh9303ca1275ac1a8p191fbcjsn68f3d3e05b82"
-SCREENSHOT_API_KEY = "6cf3c4e650cd4fe8acc7511abcbce32c"
-SCREENSHOT_DIR = "screenshots"
+SCREENSHOT_API_KEY = "0218086a7bca4e76a57da8abb0d5166f"
+SCREENSHOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "screenshots")
 MODEL_PATH = "Malicious_URL_Prediction.h5"
 GEMINI_API_KEY = "AIzaSyDc4B__rW4_zlwePV5xFiaUDOCBEbHtS0s"
 OPENPHISH_FEED_URL = "https://openphish.com/feed.txt"
+
+app = Flask(__name__)
+CORS(app)
 
 CONFIG = {
     "template_path": "./templates/certin_form.docx",
@@ -186,19 +187,33 @@ def capture_screenshot(url, filename):
     api_url = "https://api.apiflash.com/v1/urltoimage"
     params = {"access_key": SCREENSHOT_API_KEY, "url": url, "wait_until": "page_loaded"}
     try:
-        response = requests.get(api_url, params=params, timeout=15)
+        response = requests.get(api_url, params=params, timeout=30)
+        # Check if the response was successful
         if response.status_code == 200:
             filepath = os.path.join(SCREENSHOT_DIR, filename)
             with open(filepath, "wb") as file:
                 file.write(response.content)
             return f"/screenshot/{filename}"
-        return {"error": "Screenshot capture failed"}
+        else:
+            print(f"Screenshot API error: {response.status_code}")
+            return None  # Return None instead of a dict
     except Exception as e:
         print(f"Screenshot error: {e}")
-        return {"error": "Screenshot error"}
+        return None  # Return None instead of a dict
 
 @app.route('/screenshot/<filename>', methods=['GET'])
 def get_screenshot(filename):
+    # Print for debugging
+    print(f"Requested screenshot: {filename}")
+    print(f"Looking in directory: {SCREENSHOT_DIR}")
+    
+    # Check if file exists
+    full_path = os.path.join(SCREENSHOT_DIR, filename)
+    if not os.path.exists(full_path):
+        print(f"File not found: {full_path}")
+        return {"error": "File not found"}, 404
+    
+    # Serve the file
     return send_from_directory(SCREENSHOT_DIR, filename)
 
 @app.route('/analyze', methods=['POST'])
