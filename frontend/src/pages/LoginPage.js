@@ -144,7 +144,7 @@ const Login = () => {
                         placeholder="Enter code shown above"
                         value={userInput}
                         onChange={(e) => setUserInput(e.target.value)}
-                        className="captcha-input"
+                        className="captcha-input text-black"
                       />
                       <button 
                         type="button" 

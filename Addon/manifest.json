@@ -2,17 +2,15 @@
   "manifest_version": 3,
   "name": "CatchPhish Protector",
   "version": "1.0",
-  "description": "Real-time phishing detection and protection as you browse",
+  "description": "Protect against phishing by analyzing websites and blocking risky form inputs in real-time",
   "permissions": [
     "tabs",
     "webNavigation",
     "webRequest",
     "storage",
     "notifications",
-    "declarativeNetRequest",
-    "activeTab"
+    "declarativeNetRequest"
   ],
-  "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js"
   },
@@ -32,16 +30,31 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"]
+      "js": ["content-script.js"],
+      "run_at": "document_end"
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["block.html", "images/*"],
+      "resources": [
+        "block.html",
+        "images/icon16.png",
+        "images/icon48.png",
+        "images/icon128.png"
+      ],
       "matches": ["<all_urls>"]
     }
   ],
   "declarative_net_request": {
-    "rule_resources": []
+    "rule_resources": [
+      {
+        "id": "ruleset_1",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
   }
 }

@@ -1,5 +1,5 @@
 const API_ENDPOINT = "http://localhost:5001/analyze";
-const IMAGE_API_ENDPOINT = "http://localhost:5001/analyze"; // Using the same endpoint for image analysis
+const IMAGE_API_ENDPOINT = "http://localhost:5001/api/phishing/analyze"; // Using the same endpoint for image analysis
 const SCAN_TIMEOUT = 2000; // 2 seconds
 const CACHE_EXPIRY = 3600000; // 1 hour
 
