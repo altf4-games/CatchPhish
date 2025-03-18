@@ -5,7 +5,7 @@ import "./HomePage.js"; // Add proper extension
 import ReportTracker from "./ReportTracker";
 import InsightsAnalytics from "./insight";
 import MonitorDomain from "./Monitor.js";
-
+import ApkAnalysis from "./apkanalysis.js";
 function Dashboard() {
   const [username, setUsername] = useState("");
   const [userData, setUserData] = useState([]);
@@ -169,7 +169,7 @@ function Dashboard() {
     { icon: "🎯", label: "Takedown Tracker", id: "takedown" },
     { icon: "📈", label: "Insights & Analytics", id: "insights" },
     { icon: "📊", label: "Monitor", id: "monitor" },
-    { icon: "⚙️", label: "Settings", id: "settings" },
+    { icon: "⚙️", label: "Apk Analysis", id: "settings" },
   ];
 
   // Render the appropriate section based on activeSection state
@@ -329,16 +329,7 @@ function Dashboard() {
           );
         }
       case "settings":
-        return (
-          <div className="p-6">
-            <h1 className="text-2xl font-bold mb-6">Settings</h1>
-            <div className="bg-slate-800/40 backdrop-blur rounded-xl border border-blue-900/30 p-8 text-center">
-              <p className="text-lg text-white/70">
-                Settings functionality will be implemented here
-              </p>
-            </div>
-          </div>
-        );
+        return <ApkAnalysis />;
       case "monitor":
         return (
           <div className="p-6">

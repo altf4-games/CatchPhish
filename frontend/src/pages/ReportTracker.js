@@ -254,7 +254,9 @@ const ReportTracker = () => {
                           {report.status.toUpperCase()}
                         </span>
                       </td>
-                      <td className="py-3 px-4 font-mono text-cyan-50">{report.timestamp}</td>
+                      <td className="py-3 px-4 font-mono text-cyan-50">
+  {report.timestamp ? new Date(report.timestamp).toLocaleString() : 'N/A'}
+</td>
                     </tr>
                   ))}
                 </tbody>

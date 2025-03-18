@@ -623,10 +623,10 @@ function Dashboard() {
                   </ul>
                 </div>
               )}
-            <div className="detail-item">
+            {/* <div className="detail-item">
               <strong>Extracted Text:</strong>
               <pre>{result.extracted_text}</pre>
-            </div>
+            </div> */}
             {result.detected_logos && result.detected_logos.length > 0 && (
               <div className="detail-item">
                 <strong>Detected Logos:</strong>

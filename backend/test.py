@@ -40,7 +40,7 @@ GEMINI_API_KEY = "AIzaSyDc4B__rW4_zlwePV5xFiaUDOCBEbHtS0s"
 OPENPHISH_FEED_URL = "https://raw.githubusercontent.com/openphish/public_feed/refs/heads/main/feed.txt"
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True)
 
 CONFIG = {
     "template_path": "./templates/certin_form.docx",
@@ -972,9 +972,13 @@ def load_domains_from_api(search_term):
         return []
     
 from logo import phishing_api
+from app import mobsf_blueprint
 
 # Register the phishing detection blueprint
 app.register_blueprint(phishing_api, url_prefix='/api/phishing')
+
+app.register_blueprint(mobsf_blueprint)
+
     
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
