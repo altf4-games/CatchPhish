@@ -48,6 +48,70 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
     });
+
+  // Add screenshot button event listener
+  if (document.getElementById("screenshotButton")) {
+    document
+      .getElementById("screenshotButton")
+      .addEventListener("click", function () {
+        // Update status to show we're taking a screenshot
+        updateStatus("unknown", "Taking screenshot...");
+
+        // Send message to background script to take screenshot
+        chrome.runtime.sendMessage(
+          { action: "takeScreenshot" },
+          function (response) {
+            if (response && response.success) {
+              // Update status based on screenshot analysis
+              let riskScore = 0;
+
+              // Handle different response formats
+              if (
+                response.analysis &&
+                response.analysis.analysis &&
+                response.analysis.analysis.phishing_score !== undefined
+              ) {
+                riskScore = Math.round(
+                  response.analysis.analysis.phishing_score * 100
+                );
+              } else if (
+                response.analysis &&
+                response.analysis.phishing_score !== undefined
+              ) {
+                riskScore = Math.round(response.analysis.phishing_score * 100);
+              }
+
+              document.getElementById(
+                "riskScore"
+              ).textContent = `${riskScore}%`;
+
+              if (riskScore >= 70) {
+                updateStatus(
+                  "danger",
+                  `High risk phishing detected (${riskScore}%)`
+                );
+              } else if (riskScore >= 40) {
+                updateStatus("warning", `Suspicious content (${riskScore}%)`);
+              } else {
+                updateStatus("safe", `Content appears safe (${riskScore}%)`);
+              }
+
+              // Store the screenshot analysis results
+              chrome.storage.local.set({
+                lastScreenshotScore: riskScore,
+              });
+            } else {
+              // Handle error with more detail
+              const errorMsg =
+                response && response.error
+                  ? `Screenshot failed: ${response.error}`
+                  : "Screenshot failed";
+              updateStatus("danger", errorMsg);
+            }
+          }
+        );
+      });
+  }
 });
 
 // Load and display blocked domains
@@ -56,6 +120,12 @@ function loadBlockedDomains() {
     { action: "getBlockedDomains" },
     function (domains) {
       const blockedListElement = document.getElementById("blockedList");
+
+      // Check if element exists
+      if (!blockedListElement) {
+        console.error("Element #blockedList not found");
+        return;
+      }
 
       if (!domains || domains.length === 0) {
         blockedListElement.innerHTML =
@@ -158,6 +228,11 @@ function checkCurrentPage() {
 // Update status display
 function updateStatus(type, message) {
   const statusElement = document.getElementById("currentStatus");
+  if (!statusElement) {
+    console.error("Element #currentStatus not found");
+    return;
+  }
+
   statusElement.className = `status status-${type}`;
 
   let icon = "?";
@@ -177,40 +252,3 @@ function extractDomain(url) {
     return url.split("/")[2] || "";
   }
 }
-
-// Add this at the end of your DOMContentLoaded event listener
-document
-  .getElementById("screenshotButton")
-  .addEventListener("click", function () {
-    // Update status to show we're taking a screenshot
-    updateStatus("unknown", "Taking screenshot...");
-
-    // Send message to background script to take screenshot
-    chrome.runtime.sendMessage(
-      { action: "takeScreenshot" },
-      function (response) {
-        if (response && response.success) {
-          // Update status based on screenshot analysis
-          const riskScore =
-            response.analysis &&
-            response.analysis.analysis &&
-            response.analysis.analysis.phishing_score
-              ? Math.round(response.analysis.analysis.phishing_score * 100)
-              : 0;
-
-          document.getElementById("riskScore").textContent = `${riskScore}%`;
-
-          if (riskScore >= 70) {
-            updateStatus("danger", `High risk phishing email (${riskScore}%)`);
-          } else if (riskScore >= 40) {
-            updateStatus("warning", `Suspicious email (${riskScore}%)`);
-          } else {
-            updateStatus("safe", `Email appears safe (${riskScore}%)`);
-          }
-        } else {
-          // Handle error
-          updateStatus("danger", "Screenshot failed");
-        }
-      }
-    );
-  });

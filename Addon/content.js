@@ -1,3 +1,4 @@
+// Listen for warning messages from background script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "showWarning") {
     showWarningBanner(message.domain, message.riskScore);
@@ -16,13 +17,19 @@ function showWarningBanner(domain, riskScore) {
   const banner = document.createElement("div");
   banner.id = "catchphish-warning-banner";
   banner.style = `
-      position: fixed;
-       top: 0;
-       left: 0;
- @@ -31,34 +31,36 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-       justify-content: space-between;
-       box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-     `;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 2147483647;
+    background-color: #FFF3CD;
+    color: #856404;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  `;
 
   const warningIcon = document.createElement("span");
   warningIcon.innerHTML = "⚠️";
@@ -40,28 +47,33 @@ function showWarningBanner(domain, riskScore) {
   const closeButton = document.createElement("button");
   closeButton.textContent = "✕";
   closeButton.style = `
-      background: none;
-       border: none;
-       font-size: 18px;
-       cursor: pointer;
-       padding: 0 10px;
-     `;
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0 10px;
+  `;
   closeButton.onclick = () => {
     banner.remove();
+    // Remove margin when banner is closed
+    document.body.style.marginTop = "0";
   };
 
   const proceedButton = document.createElement("button");
   proceedButton.textContent = "Proceed Anyway";
   proceedButton.style = `
-      background-color: #FF5722;
-       color: white;
-       border: none;
- @@ -67,27 +69,137 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-       margin-left: 10px;
-       cursor: pointer;
-     `;
+    background-color: #FF5722;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    margin-left: 10px;
+    cursor: pointer;
+  `;
   proceedButton.onclick = () => {
     banner.remove();
+    // Remove margin when proceed is clicked
+    document.body.style.marginTop = "0";
   };
 
   messageContainer.appendChild(messageText);
@@ -74,13 +86,8 @@ function showWarningBanner(domain, riskScore) {
   document.body.insertBefore(banner, document.body.firstChild);
 
   // Push page content down
-  document.body.style.marginTop = banner.offsetHeight + "px";
-
-  // Remove margin when banner is closed
-  closeButton.addEventListener("click", () => {
-    document.body.style.marginTop = "0";
-  });
-  proceedButton.addEventListener("click", () => {
-    document.body.style.marginTop = "0";
-  });
+  // Wait for banner to be rendered to get accurate height
+  setTimeout(() => {
+    document.body.style.marginTop = banner.offsetHeight + "px";
+  }, 10);
 }

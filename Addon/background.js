@@ -440,6 +440,7 @@ function showNotification(title, message) {
 }
 
 // Listen for messages from popup or content scripts
+// Listen for messages from popup or content scripts
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "getBlockedDomains") {
     sendResponse([...blockedDomains]);
@@ -454,9 +455,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     });
     sendResponse({ success: true });
   }
-  // NEW ACTION: Handle screenshot request
-  // NEW ACTION: Handle screenshot request
+  // Handle screenshot request
   else if (message.action === "takeScreenshot") {
+    // Return true to keep the message channel open for async response
     chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
       if (tabs[0]) {
         try {
@@ -489,8 +490,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         });
       }
     });
-    // Return true to indicate we'll respond asynchronously
-    return true;
+    return true; // This is critical to keep the message channel open
   }
+  // For other synchronous responses
   return true;
 });

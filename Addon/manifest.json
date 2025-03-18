@@ -5,6 +5,7 @@
   "description": "Protect against phishing by analyzing websites and blocking risky form inputs in real-time",
   "permissions": [
     "tabs",
+    "activeTab",
     "webNavigation",
     "webRequest",
     "storage",
@@ -30,7 +31,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content-script.js"],
+      "js": ["content.js"],
       "run_at": "document_end"
     }
   ],
