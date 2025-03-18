@@ -494,35 +494,3 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
   return true;
 });
-
-// background.js
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === "analyzeRisk") {
-    const riskScore = message.riskScore;
-    const tabId = sender.tab.id;
-
-    // If risk score > 55%, enforce CSP
-    if (riskScore > 55) {
-      chrome.tabs.sendMessage(tabId, { action: "enforceCSP" }, (response) => {
-        if (chrome.runtime.lastError) {
-          // Content script might not be loaded yet, inject it first
-          chrome.scripting.executeScript(
-            {
-              target: { tabId: tabId },
-              files: ["content-script.js"],
-            },
-            () => {
-              // Now send the message again
-              chrome.tabs.sendMessage(tabId, { action: "enforceCSP" });
-            }
-          );
-        }
-      });
-    } else {
-      // Risk is acceptable, ensure interactions are enabled
-      chrome.tabs.sendMessage(tabId, { action: "disableCSP" });
-    }
-    sendResponse({ status: "Risk analysis processed" });
-  }
-  return true;
-});
