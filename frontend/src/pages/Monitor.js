@@ -160,6 +160,32 @@ const MonitorDomain = () => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // Retrieve stored values on component mount
+  useEffect(() => {
+    const savedDomain = localStorage.getItem("domain");
+    const savedInterval = localStorage.getItem("interval");
+    const savedMessage = localStorage.getItem("message");
+    
+    if (savedDomain) setDomain(savedDomain);
+    if (savedInterval) setInterval(savedInterval);
+    if (savedMessage) setMessage(savedMessage);
+  }, []);
+
+  // Persist domain to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("domain", domain);
+  }, [domain]);
+
+  // Persist interval to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("interval", interval);
+  }, [interval]);
+
+  // Persist message to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("message", message);
+  }, [message]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
@@ -220,7 +246,7 @@ const MonitorDomain = () => {
                 id="domain"
                 value={domain}
                 onChange={(e) => setDomain(e.target.value)}
-                className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                className="pl-10 text-black w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                 placeholder="example.com"
                 required
               />
@@ -242,7 +268,7 @@ const MonitorDomain = () => {
                 id="interval"
                 value={interval}
                 onChange={(e) => setInterval(e.target.value)}
-                className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                className="pl-10 w-full px-3 text-black py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                 placeholder="1 hour"
                 required
               />
