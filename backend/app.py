@@ -7,7 +7,7 @@ from flask import Blueprint, request, jsonify, send_file
 # Configuration
 # =======================
 MOBSF_URL = "http://localhost:8000"
-API_KEY = "1d2a1e38c27d6d0609e1a57b146674f7c5a40014a701967df8fa6c769e21b511"
+API_KEY = "2dd4c6d5c79c6d0335d463b6e23085bbccd269425a74f6876e278e42f1fce2fd"
 UPLOAD_FOLDER = 'uploads'
 REPORTS_FOLDER = 'reports'
 
